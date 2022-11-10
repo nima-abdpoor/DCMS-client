@@ -1,6 +1,5 @@
 package com.nima.dcms.urlconverter
 
-import android.R.string
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 
