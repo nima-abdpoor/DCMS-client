@@ -1,5 +1,7 @@
 package com.nima.dcms.database.datasource.abstract
 
-interface CacheDataSource {
-//    fun getAllURLIds() : List<Long>
+//import com.nima.dcms.database.entitty.URLIdsEntity
+
+interface CacheDataSourcee {
+    fun getAllURLIds(): List<String>
 }
