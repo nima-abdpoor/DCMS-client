@@ -1,16 +1,19 @@
-//package com.nima.dcms.database
-//
-//import android.content.Context
-//import com.nima.dcms.database.entitty.MyObjectBox
-//import io.objectbox.BoxStore
-//
-//object ObjectBox {
-//    lateinit var store: BoxStore
-//        private set
-//
-//    fun init(context: Context) {
-//        store = MyObjectBox.builder()
-//            .androidContext(context.applicationContext)
-//            .build()
-//    }
-//}
+package com.nima.dcms.database
+
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import com.nima.dcms.database.entitty.Config
+import com.nima.dcms.database.entitty.URLIdFirst
+import com.nima.dcms.database.entitty.URLIdSecond
+
+
+@Database(
+    entities = [
+        URLIdFirst::class,
+        URLIdSecond::class,
+        Config::class,
+    ], version = 1
+)
+abstract class DCMSDataBase : RoomDatabase() {
+    abstract fun myDao(): MyDao
+}
