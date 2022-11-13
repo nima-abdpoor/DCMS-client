@@ -1,0 +1,13 @@
+package com.nima.dcms.database.entitty
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
+data class URLIdSecond(
+    @PrimaryKey var id: Long? = 0,
+    var urlId: Long? = null,
+    var regex : String? = null,
+    var startIndex : Int? = null,
+    var finishIndex : Int? = null,
+)
