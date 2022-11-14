@@ -1,19 +1,19 @@
-package com.nima.dcms.database
+package com.nima.dcms.datasource.database
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.nima.dcms.database.entitty.Config
-import com.nima.dcms.database.entitty.URLIdFirst
-import com.nima.dcms.database.entitty.URLIdSecond
+import com.nima.dcms.datasource.database.entitty.Config
+import com.nima.dcms.datasource.database.entitty.URLIdFirst
+import com.nima.dcms.datasource.database.entitty.URLIdSecond
 
 @Dao
 interface MyDao {
 
     //URLIdFirst
     @Query("SELECT * FROM URLIdFirst")
-    fun getURLIdFirst(): URLIdFirst
+    fun getURLIdFirst(): List<URLIdFirst>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertURLIdFirst(vararg ids: URLIdFirst)
