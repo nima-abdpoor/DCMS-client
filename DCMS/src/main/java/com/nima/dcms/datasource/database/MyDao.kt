@@ -19,8 +19,8 @@ interface MyDao {
     fun insertURLIdFirst(vararg ids: URLIdFirst)
 
     //URLIdSecond
-    @Query("SELECT * FROM URLIdFirst")
-    fun getURLIdSecond(): URLIdSecond
+    @Query("SELECT * FROM URLIdSecond")
+    fun getURLIdSecond(): List<URLIdSecond>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertURLIdSecond(vararg ids: URLIdSecond)
