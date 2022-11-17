@@ -1,12 +1,13 @@
 package com.nima.network.manager
 
 import android.content.Context
-import android.os.Bundle
 import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import com.nima.network.manager.model.ConfigBody
 import com.nima.network.manager.model.HttpMethods
 import com.nima.network.manager.request.HttpRequestBuilder
+import com.nima.network.manager.wrapper.ResultWrapper
 import kotlinx.coroutines.runBlocking
 import java.io.BufferedOutputStream
 import java.io.OutputStream
@@ -21,15 +22,23 @@ class UploadDataManager(appContext: Context, workerParams: WorkerParameters) :
         return Result.success()
     }
 
-    private fun uploadDataTwo(){
+    private fun uploadDataTwo() {
         runBlocking {
             val request = HttpRequestBuilder()
-                .setUrl("http://google.com")
+                .setUrl("https://google.com")
                 .setMethod(HttpMethods.GET)
-                .submit()
-            Log.d("TAG", "uploadDataTwo: " +
-                    "code:${request.responseCode}" +
-                    "message:${request.responseMessage}")
+                .submit(ConfigBody())
+            when (request) {
+                is ResultWrapper.GenericError -> {
+                    Log.d("TAG", "uploadDataTwo:GenericError ${request.error?.message}")
+                }
+                is ResultWrapper.NetworkError -> {
+                    Log.d("TAG", "uploadDataTwo:NetworkError ${request.error?.message}")
+                }
+                is ResultWrapper.Success -> {
+                    Log.d("TAG", "uploadDataTwo:Success ${request.value?.body}")
+                }
+            }
         }
 
 
