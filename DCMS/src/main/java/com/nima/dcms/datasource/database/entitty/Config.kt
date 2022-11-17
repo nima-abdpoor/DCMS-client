@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity
 data class Config(
     @PrimaryKey var id: Long = 0,
-    var receivedIndices: Int? = null,
+    var validRequestUrls : List<String>? = null,
     var isLive : Boolean? = false,
     var syncType : NetWorkSyncType? = NetWorkSyncType.Default,
 )
