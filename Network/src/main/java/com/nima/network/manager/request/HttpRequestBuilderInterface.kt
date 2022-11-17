@@ -15,5 +15,5 @@ interface HttpRequestBuilderInterface {
     fun setConnectTimeOut(value: Int = CONNECT_TIME_OUT): HttpRequestBuilderInterface
     fun setRequestProperty(vararg pairs: Pair<String, String>): HttpRequestBuilderInterface
     fun setPostData(data: String): HttpRequestBuilderInterface
-    fun <T>submit(model: T): ResultWrapper<Response<T>>
+    fun <T>submit(model: ResponseClass): ResultWrapper<Response<T>>
 }

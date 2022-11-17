@@ -1,6 +1,5 @@
 package com.nima.network.manager.request
 
-import android.util.Log
 import com.nima.network.manager.model.ConfigBody
 import com.nima.network.manager.model.HttpMethods
 import com.nima.network.manager.model.ResponseClass
@@ -53,7 +52,7 @@ class HttpRequestBuilder : HttpRequestBuilderInterface {
         return this
     }
 
-    override fun <T> submit(model: T): ResultWrapper<Response<T>> {
+    override fun <T> submit(model: ResponseClass): ResultWrapper<Response<T>> {
         try {
             httpURLConnection =
                 URL(httpRequestBuilder.requestUrl).openConnection() as HttpURLConnection
@@ -88,7 +87,7 @@ class HttpRequestBuilder : HttpRequestBuilderInterface {
                     }
                     val response = Response<T>()
                     response.isSuccessful = true
-                    response.body = result.mapStringToModel()
+                    response.body = result.mapStringToModel(model)
                     return ResultWrapper.Success(response)
                 } else {
                     br = BufferedReader(InputStreamReader(errorStream))
@@ -136,7 +135,8 @@ class HttpRequestBuilder : HttpRequestBuilderInterface {
     }
 }
 
-private fun String?.mapStringToModel(): ResponseClass {
-    Log.d("TAG", "mapStringToModel:${this?.length} $this")
-    return ConfigBody(this)
+private fun String?.mapStringToModel(model: ResponseClass): ResponseClass {
+    when (model) {
+        is ConfigBody -> return ConfigBody(body = this)
+    }
 }

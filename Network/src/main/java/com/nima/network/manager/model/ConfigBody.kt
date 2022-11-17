@@ -1,6 +1,6 @@
 package com.nima.network.manager.model
 
-open class ResponseClass
+sealed class ResponseClass
 
 data class ConfigBody(
     val body : String? = null
