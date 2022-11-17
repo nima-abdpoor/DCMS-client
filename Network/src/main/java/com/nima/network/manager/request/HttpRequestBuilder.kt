@@ -82,12 +82,14 @@ class HttpRequestBuilder : HttpRequestBuilderInterface {
                 if (responseCode in 100..399) {
                     br = BufferedReader(InputStreamReader(inputStream))
                     var strCurrentLine: String?
+                    var result = ""
                     while (br.readLine().also { strCurrentLine = it } != null) {
-                        val response = Response<T>()
-                        response.isSuccessful = true
-                        response.body = strCurrentLine?.mapStringToModel()
-                        return ResultWrapper.Success(response)
+                        result += strCurrentLine
                     }
+                    val response = Response<T>()
+                    response.isSuccessful = true
+                    response.body = result.mapStringToModel()
+                    return ResultWrapper.Success(response)
                 } else {
                     br = BufferedReader(InputStreamReader(errorStream))
                     var strCurrentLine: String?
