@@ -1,8 +1,11 @@
 package com.nima.network.manager.request
 
 import com.nima.network.manager.model.HttpMethods
+import com.nima.network.manager.model.ResponseClass
 import com.nima.network.manager.util.CONNECT_TIME_OUT
 import com.nima.network.manager.util.READ_TIME_OUT
+import com.nima.network.manager.wrapper.Response
+import com.nima.network.manager.wrapper.ResultWrapper
 import java.net.HttpURLConnection
 
 interface HttpRequestBuilderInterface {
@@ -12,5 +15,5 @@ interface HttpRequestBuilderInterface {
     fun setConnectTimeOut(value: Int = CONNECT_TIME_OUT): HttpRequestBuilderInterface
     fun setRequestProperty(vararg pairs: Pair<String, String>): HttpRequestBuilderInterface
     fun setPostData(data: String): HttpRequestBuilderInterface
-    fun submit(): HttpURLConnection
+    fun <T>submit(model: T): ResultWrapper<Response<T>>
 }
