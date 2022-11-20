@@ -16,3 +16,4 @@ rootProject.name = "DCMS"
 include ':app'
 include ':DCMS'
 include ':Network'
+include ':common'
