@@ -1,12 +1,11 @@
 package com.nima.network.manager.request
 
 import com.nima.network.manager.model.HttpMethods
-import com.nima.network.manager.model.ResponseClass
+import com.nima.common.model.ResponseClass
 import com.nima.network.manager.util.CONNECT_TIME_OUT
 import com.nima.network.manager.util.READ_TIME_OUT
 import com.nima.network.manager.wrapper.Response
 import com.nima.network.manager.wrapper.ResultWrapper
-import java.net.HttpURLConnection
 
 interface HttpRequestBuilderInterface {
     fun setMethod(method: HttpMethods): HttpRequestBuilderInterface

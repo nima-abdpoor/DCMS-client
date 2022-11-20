@@ -1,6 +1,6 @@
 package com.nima.network.manager.wrapper
 
-import com.nima.network.manager.model.ResponseClass
+import com.nima.common.model.ResponseClass
 
 class Response<T> {
     var isSuccessful = false

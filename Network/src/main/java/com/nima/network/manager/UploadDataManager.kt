@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.nima.network.manager.model.ConfigBody
+import com.nima.common.model.ConfigBody
 import com.nima.network.manager.model.HttpMethods
 import com.nima.network.manager.request.HttpRequestBuilder
 import com.nima.network.manager.wrapper.ResultWrapper
