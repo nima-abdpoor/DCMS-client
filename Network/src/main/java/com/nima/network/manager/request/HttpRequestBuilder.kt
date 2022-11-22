@@ -1,8 +1,8 @@
 package com.nima.network.manager.request
 
-import com.nima.common.mappers.mapToProperModel
-import com.nima.network.manager.model.HttpMethods
+import com.nima.common.mapper.mapToProperModel
 import com.nima.common.model.ResponseClass
+import com.nima.network.manager.model.HttpMethods
 import com.nima.network.manager.util.CONNECT_TIME_OUT
 import com.nima.network.manager.util.READ_TIME_OUT
 import com.nima.network.manager.wrapper.ErrorResponse
