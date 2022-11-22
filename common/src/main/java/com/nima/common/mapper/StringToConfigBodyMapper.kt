@@ -1,4 +1,4 @@
-package com.nima.common.mappers
+package com.nima.common.mapper
 
 import com.nima.common.model.ConfigBody
 import com.nima.common.model.ResponseClass
@@ -29,7 +29,17 @@ fun String.toConfigBodyMapper(): ConfigBody {
     val urlIdSecond = ArrayList<UrlIdSecond>()
     validUrlsJson.forEach { validUrls.add(it as String) }
     urlIdFirstJson.forEach { urlIdFirst.add(UrlIdFirst(it as Long)) }
-    urlIdSecondJson.forEach { urlIdSecond.add(UrlIdSecond(it as Long)) }
+    urlIdSecondJson.forEach {
+        it as JSONObject
+        urlIdSecond.add(
+            UrlIdSecond(
+                ids = it["urlId"] as Long,
+                regex = it["regex"] as String,
+                startIndex = it["startIndex"] as Long,
+                finishIndex = it["finishIndex"] as Long
+            )
+        )
+    }
     return ConfigBody(
         validRequestUrls = validUrls,
         urlIdFirst = urlIdFirst,
