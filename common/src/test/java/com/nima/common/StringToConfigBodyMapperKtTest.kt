@@ -1,4 +1,4 @@
-package com.nima.network
+package com.nima.common
 
 import com.nima.common.mapper.toConfigBodyMapper
 import org.junit.Assert.assertEquals
