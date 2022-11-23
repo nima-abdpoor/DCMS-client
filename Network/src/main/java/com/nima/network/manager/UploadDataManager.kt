@@ -13,15 +13,15 @@ import kotlinx.coroutines.runBlocking
 class UploadDataManager(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
     override fun doWork(): Result {
-        uploadDataTwo()
+        uploadDataTest()
         return Result.success()
     }
 
-    private fun uploadDataTwo() {
+    private fun uploadDataTest() {
         runBlocking {
             val request = HttpRequestBuilder()
-                .setUrl("https://google.com")
-                .setMethod(HttpMethods.GET)
+                .setUrl("http://192.168.43.145:8080/config")
+                .setMethod(HttpMethods.POST)
                 .submit<ConfigBody>(ConfigBody())
             when (request) {
                 is ResultWrapper.GenericError -> {

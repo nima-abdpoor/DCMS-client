@@ -28,7 +28,7 @@ class HttpRequestBuilder : HttpRequestBuilderInterface {
     }
 
     override fun setMethod(method: HttpMethods): HttpRequestBuilderInterface {
-        httpRequestBuilder.method = method
+        httpRequestBuilder.method.value = method.value
         return this
     }
 
