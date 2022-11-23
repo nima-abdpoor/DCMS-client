@@ -27,6 +27,11 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    configurations.all {
+        resolutionStrategy.dependencySubstitution {
+            substitute module('org.hamcrest:hamcrest-core:1.1') with module('junit:junit:4.10')
+        }
+    }
 }
 
 dependencies {
@@ -36,8 +41,6 @@ dependencies {
     // Kotlin + coroutines
     implementation "androidx.work:work-runtime-ktx:$work_version"
     implementation project(':common')
-
-    testImplementation 'junit:junit:4.13.2'
     testImplementation 'androidx.test.ext:junit:1.1.4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
 }
