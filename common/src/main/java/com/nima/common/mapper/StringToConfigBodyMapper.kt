@@ -8,7 +8,7 @@ import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 
-fun ResponseClass.mapToProperModel(result: String): ResponseClass? {
+fun <T: ResponseClass> ResponseClass.mapToProperModel(result: String): T? {
     return try {
         when (this) {
             is ConfigBody -> result.toConfigBodyMapper()
@@ -19,7 +19,7 @@ fun ResponseClass.mapToProperModel(result: String): ResponseClass? {
 }
 
 
-fun String.toConfigBodyMapper(): ConfigBody {
+fun <T:ResponseClass> String.toConfigBodyMapper(): T {
     val jsonObject = JSONParser().parse(this) as JSONObject
     val validUrlsJson = jsonObject["validRequestUrls"] as JSONArray
     val urlIdFirstJson = jsonObject["urlIdFirst"] as JSONArray
@@ -46,5 +46,5 @@ fun String.toConfigBodyMapper(): ConfigBody {
         urlIdSecond = urlIdSecond,
         isLive = jsonObject["isLive"] as Boolean,
         syncType = jsonObject["syncType"] as String
-    )
+    ) as T
 }
