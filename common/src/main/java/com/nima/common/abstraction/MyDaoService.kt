@@ -1,8 +1,8 @@
-package com.nima.dcms.datasource.abstraction
+package com.nima.common.abstraction
 
-import com.nima.dcms.datasource.database.entitty.Config
-import com.nima.dcms.datasource.database.entitty.URLIdFirst
-import com.nima.dcms.datasource.database.entitty.URLIdSecond
+import com.nima.common.database.entitty.Config
+import com.nima.common.database.entitty.URLIdFirst
+import com.nima.common.database.entitty.URLIdSecond
 
 interface MyDaoService {
     suspend fun getAllUrlFirst(): List<URLIdFirst>

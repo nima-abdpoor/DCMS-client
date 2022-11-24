@@ -1,10 +1,10 @@
-package com.nima.dcms.datasource.implementation
+package com.nima.common.implementation
 
-import com.nima.dcms.datasource.abstraction.MyDaoService
-import com.nima.dcms.datasource.database.MyDao
-import com.nima.dcms.datasource.database.entitty.Config
-import com.nima.dcms.datasource.database.entitty.URLIdFirst
-import com.nima.dcms.datasource.database.entitty.URLIdSecond
+import com.nima.common.abstraction.MyDaoService
+import com.nima.common.database.MyDao
+import com.nima.common.database.entitty.Config
+import com.nima.common.database.entitty.URLIdFirst
+import com.nima.common.database.entitty.URLIdSecond
 
 class MyDaoServiceImpl(
     private val dao: MyDao,
