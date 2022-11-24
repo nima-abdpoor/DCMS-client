@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.nima.common.abstraction.MyDaoService
+import com.nima.common.database.entitty.URLIdFirst
+import com.nima.common.database.entitty.URLIdSecond
 import com.nima.common.database.entitty.toConfig
 import com.nima.common.database.getDao
 import com.nima.common.implementation.MyDaoServiceImpl
@@ -45,10 +47,21 @@ class UploadDataManager(appContext: Context, workerParams: WorkerParameters) :
             is ResultWrapper.Success -> {
                 val config = request.value?.body
                 Log.d("TAG", "uploadDataTest: $config")
-                config?.validRequestUrls?.forEach {
-
-                }
                 dbService.insertConfig(config.toConfig())
+                config?.urlIdFirst?.forEachIndexed { index, it ->
+                    dbService.insertURLFirst(URLIdFirst(id = index.toLong(), urlId = it.id))
+                }
+                config?.urlIdSecond?.forEachIndexed { index, it ->
+                    dbService.insertURLSecond(
+                        URLIdSecond(
+                            id = index.toLong(),
+                            urlId = it.id,
+                            regex = it.regex,
+                            startIndex = it.startIndex,
+                            finishIndex = it.finishIndex
+                        )
+                    )
+                }
                 return@runBlocking Result.success()
             }
             else -> return@runBlocking Result.retry()

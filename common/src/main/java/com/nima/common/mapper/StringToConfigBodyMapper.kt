@@ -33,7 +33,7 @@ fun <T:ResponseClass> String.toConfigBodyMapper(): T {
         it as JSONObject
         urlIdSecond.add(
             UrlIdSecond(
-                ids = it["urlId"] as Long,
+                id = it["urlId"] as Long,
                 regex = it["regex"] as String,
                 startIndex = it["startIndex"] as Long,
                 finishIndex = it["finishIndex"] as Long
