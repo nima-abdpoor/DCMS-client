@@ -100,7 +100,7 @@ class HttpRequestBuilder : HttpRequestBuilderInterface {
                 }
             }
         } catch (e: Exception) {
-            ResultWrapper.GenericError(ErrorResponse())
+            ResultWrapper.GenericError(ErrorResponse(message = e.message))
         } finally {
             httpURLConnection.disconnect()
         }
