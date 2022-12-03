@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.nima.common.database.entitty.Config
+import com.nima.common.database.entitty.RequestUrl
 import com.nima.common.database.entitty.URLIdFirst
 import com.nima.common.database.entitty.URLIdSecond
 
@@ -14,6 +15,7 @@ import com.nima.common.database.entitty.URLIdSecond
         URLIdFirst::class,
         URLIdSecond::class,
         Config::class,
+        RequestUrl::class
     ], version = 1
 )
 abstract class DCMSDataBase : RoomDatabase() {

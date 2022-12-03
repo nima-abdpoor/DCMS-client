@@ -3,6 +3,7 @@ package com.nima.common.implementation
 import com.nima.common.abstraction.MyDaoService
 import com.nima.common.database.MyDao
 import com.nima.common.database.entitty.Config
+import com.nima.common.database.entitty.RequestUrl
 import com.nima.common.database.entitty.URLIdFirst
 import com.nima.common.database.entitty.URLIdSecond
 
@@ -16,6 +17,14 @@ class MyDaoServiceImpl(
 
     override suspend fun insertURLFirst(urlIdFirst: URLIdFirst) {
         dao.insertURLIdFirst(urlIdFirst)
+    }
+
+    override suspend fun getAllRequestUrl(): List<RequestUrl> {
+        return dao.getRequestUrl()
+    }
+
+    override suspend fun insertRequestUrl(requestUrl: RequestUrl) {
+        dao.insertRequestUrl(requestUrl)
     }
 
     override suspend fun getAllUrlSecond(): List<URLIdSecond> {

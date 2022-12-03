@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.nima.common.database.entitty.Config
+import com.nima.common.database.entitty.RequestUrl
 import com.nima.common.database.entitty.URLIdFirst
 import com.nima.common.database.entitty.URLIdSecond
 
@@ -17,6 +18,13 @@ interface MyDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertURLIdFirst(vararg ids: URLIdFirst)
+
+    //RequestUrl
+    @Query("SELECT * FROM RequestUrl")
+    fun getRequestUrl(): List<RequestUrl>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertRequestUrl(vararg ids: RequestUrl)
 
     //URLIdSecond
     @Query("SELECT * FROM URLIdSecond")
