@@ -3,6 +3,7 @@ package com.nima.common.model
 sealed class ResponseClass
 
 data class ConfigBody(
+    val id : Long? = null,
     val validRequestUrls: List<String>? = null,
     val urlIdFirst: List<UrlIdFirst>? = null,
     val urlIdSecond: List<UrlIdSecond>? = null,

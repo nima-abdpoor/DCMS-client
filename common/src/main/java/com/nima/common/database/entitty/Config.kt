@@ -3,12 +3,10 @@ package com.nima.common.database.entitty
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.nima.common.model.ConfigBody
-import com.nima.common.utils.BASE_URL
 
 @Entity
 data class Config(
     @PrimaryKey var id: Long = 0,
-    var validRequestUrls: String? = null,
     var isLive: Boolean? = false,
     var syncType: NetWorkSyncType? = NetWorkSyncType.Default,
 )
@@ -34,14 +32,12 @@ fun ConfigBody?.toConfig(): Config {
         }
         return Config(
             id = 0,
-            validRequestUrls = requestUrls.removeSuffix(","),
             isLive = isLive,
             syncType = syncType?.toNetWorkSyncType() ?: NetWorkSyncType.Default
         )
     } ?: kotlin.run {
         return Config(
             id = 0,
-            validRequestUrls = BASE_URL,
             isLive = false,
             syncType = NetWorkSyncType.Default
         )
