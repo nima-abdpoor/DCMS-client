@@ -19,24 +19,31 @@ fun <T: ResponseClass> ResponseClass.mapToProperModel(result: String): T? {
 }
 
 
-fun <T:ResponseClass> String.toConfigBodyMapper(): T {
+fun <T : ResponseClass> String.toConfigBodyMapper(): T {
     val jsonObject = JSONParser().parse(this) as JSONObject
-    val validUrlsJson = jsonObject["validRequestUrls"] as JSONArray
-    val urlIdFirstJson = jsonObject["urlIdFirst"] as JSONArray
-    val urlIdSecondJson = jsonObject["urlIdSecond"] as JSONArray
+    val configJson = jsonObject["config"] as JSONObject
+    val validUrlsJson = jsonObject["requestUrl"] as JSONArray
+    val urlIdFirstJson = jsonObject["urlFirst"] as JSONArray
+    val urlIdSecondJson = jsonObject["urlSecond"] as JSONArray
     val validUrls = ArrayList<String>()
     val urlIdFirst = ArrayList<UrlIdFirst>()
     val urlIdSecond = ArrayList<UrlIdSecond>()
-    validUrlsJson.forEach { validUrls.add(it as String) }
-    urlIdFirstJson.forEach { urlIdFirst.add(UrlIdFirst(it as Long)) }
+    validUrlsJson.forEach {
+        it as JSONObject
+        validUrls.add(it["request_url"] as String)
+    }
+    urlIdFirstJson.forEach {
+        it as JSONObject
+        urlIdFirst.add(UrlIdFirst(id = (it["url_hash"] as String).toLong()))
+    }
     urlIdSecondJson.forEach {
         it as JSONObject
         urlIdSecond.add(
             UrlIdSecond(
-                id = it["urlId"] as Long,
+                id = (it["url_hash"] as String).toLong(),
                 regex = it["regex"] as String,
-                startIndex = it["startIndex"] as Long,
-                finishIndex = it["finishIndex"] as Long
+                startIndex = it["start_index"] as Long,
+                finishIndex = it["finish_index"] as Long,
             )
         )
     }
@@ -44,7 +51,7 @@ fun <T:ResponseClass> String.toConfigBodyMapper(): T {
         validRequestUrls = validUrls,
         urlIdFirst = urlIdFirst,
         urlIdSecond = urlIdSecond,
-        isLive = jsonObject["isLive"] as Boolean,
-        syncType = jsonObject["syncType"] as String
+        isLive = configJson["is_live"] as Boolean,
+        syncType = configJson["sync_type"] as String
     ) as T
 }

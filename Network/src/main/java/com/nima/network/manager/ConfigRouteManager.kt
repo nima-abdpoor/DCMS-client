@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.nima.common.abstraction.MyDaoService
-import com.nima.common.database.entitty.Config
+import com.nima.common.database.entitty.RequestUrl
 import com.nima.common.database.entitty.URLIdFirst
 import com.nima.common.database.entitty.URLIdSecond
 import com.nima.common.database.entitty.toConfig
@@ -21,7 +21,6 @@ import kotlinx.coroutines.runBlocking
 class ConfigRouteManager(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
     private val dbService: MyDaoService
-    private var baseUrls: List<String> = arrayListOf(BASE_URL)
     private var currentBaseUrl = 0
 
     init {
@@ -37,7 +36,7 @@ class ConfigRouteManager(appContext: Context, workerParams: WorkerParameters) :
     private fun callConfigRoute() = runBlocking {
         val request = HttpRequestBuilder()
             .setUrl("$BASE_URL/config")
-            .setMethod(HttpMethods.POST)
+            .setMethod(HttpMethods.GET)
             .submit<ConfigBody>(ConfigBody())
         when (request) {
             is ResultWrapper.GenericError -> {
@@ -61,40 +60,47 @@ class ConfigRouteManager(appContext: Context, workerParams: WorkerParameters) :
     }
 
     private suspend fun handleUnsuccessfullResponse(): Result {
-        return if ((readDataFromConfigDataBase().validRequestUrls?.split(",")?.size
-                ?: 1) >= currentBaseUrl
+        val urls = readDataFromConfigDataBase()
+        return if (urls.size >= currentBaseUrl
         ) {
+            changeBaseUrl(urls[currentBaseUrl])
             currentBaseUrl++
-            changeBaseUrl()
             Result.retry()
         } else Result.failure()
     }
 
-    private suspend fun changeBaseUrl() {
+    private suspend fun changeBaseUrl(requestUrl: RequestUrl) {
         val config = readDataFromConfigDataBase()
-        baseUrls = config.validRequestUrls?.split(",") ?: arrayListOf(BASE_URL)
-        BASE_URL = baseUrls[currentBaseUrl]
+        BASE_URL = requestUrl.url ?: BASE_URL
     }
 
     private suspend fun storeConfigDataToDataBase(config: ConfigBody?) {
         dbService.insertConfig(config.toConfig())
         config?.urlIdFirst?.forEachIndexed { index, it ->
-            dbService.insertURLFirst(URLIdFirst(id = index.toLong(), urlId = it.id))
+            dbService.insertURLFirst(URLIdFirst(id = index.toLong(), urlHash = it.id))
         }
         config?.urlIdSecond?.forEachIndexed { index, it ->
             dbService.insertURLSecond(
                 URLIdSecond(
                     id = index.toLong(),
-                    urlId = it.id,
+                    urlHash = it.id,
                     regex = it.regex,
                     startIndex = it.startIndex,
                     finishIndex = it.finishIndex
                 )
             )
         }
+        config?.validRequestUrls?.forEachIndexed { index, it ->
+            dbService.insertRequestUrl(
+                RequestUrl(
+                    id = index.toLong(),
+                    url = it
+                )
+            )
+        }
     }
 
-    private suspend fun readDataFromConfigDataBase(): Config {
-        return dbService.getConfig()
+    private suspend fun readDataFromConfigDataBase(): List<RequestUrl> {
+        return dbService.getAllRequestUrl()
     }
 }
