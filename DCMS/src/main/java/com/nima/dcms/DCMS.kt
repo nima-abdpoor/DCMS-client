@@ -6,10 +6,11 @@ import com.nima.common.database.entitty.Config
 import com.nima.common.database.getDao
 import com.nima.common.implementation.MyDaoServiceImpl
 import com.nima.common.utils.BASE_URL
+import com.nima.dcms.base.BaseDCMS
 import com.nima.network.manager.NetworkManager
 
-class DCMS(private val context: Context) {
-    private val manager: NetworkManager = NetworkManager(context)
+class DCMS(private val ctx: Context) : BaseDCMS() {
+    private val manager: NetworkManager = NetworkManager(ctx)
     private lateinit var dbService: MyDaoService
 
     fun init(uniqueId: String, vararg info: String) {
@@ -17,7 +18,8 @@ class DCMS(private val context: Context) {
     }
 
     fun init(uniqueId: String) {
-        val db = getDao(context)
+        setContext(ctx)
+        val db = getDao(ctx)
         dbService = MyDaoServiceImpl(db)
         manager.submitWork()
     }
