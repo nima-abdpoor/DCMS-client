@@ -41,9 +41,11 @@ android {
 
 dependencies {
     def version_room = "2.5.0-beta02"
+    def okhttp_version = "3.12.10"
     implementation project(':Network')
     implementation project(path: ':common')
 
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
     // Room database
     implementation "androidx.room:room-runtime:$version_room"
     implementation "androidx.room:room-ktx:$version_room"
