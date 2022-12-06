@@ -54,7 +54,8 @@ class ConfigRouteManager(appContext: Context, workerParams: WorkerParameters) :
                 return@runBlocking Result.success()
             }
             else -> {
-                return@runBlocking handleUnsuccessfullResponse()
+                return@runBlocking Result.failure()
+//                return@runBlocking handleUnsuccessfullResponse()
             }
         }
     }
