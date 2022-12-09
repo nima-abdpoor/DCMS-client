@@ -7,7 +7,4 @@ import androidx.room.PrimaryKey
 data class URLIdSecond(
     @PrimaryKey var id: Long? = 0,
     var urlHash: Long? = null,
-    var regex: String? = null,
-    var startIndex: Long? = null,
-    var finishIndex: Long? = null,
 )

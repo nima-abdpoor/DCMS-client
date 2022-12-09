@@ -2,10 +2,7 @@ package com.nima.common.implementation
 
 import com.nima.common.abstraction.MyDaoService
 import com.nima.common.database.MyDao
-import com.nima.common.database.entitty.Config
-import com.nima.common.database.entitty.RequestUrl
-import com.nima.common.database.entitty.URLIdFirst
-import com.nima.common.database.entitty.URLIdSecond
+import com.nima.common.database.entitty.*
 
 class MyDaoServiceImpl(
     private val dao: MyDao,
@@ -33,6 +30,13 @@ class MyDaoServiceImpl(
 
     override suspend fun insertURLSecond(urlIdSecond: URLIdSecond) {
         dao.insertURLIdSecond(urlIdSecond)
+    }
+
+    override suspend fun getRegex(): List<Regex> =
+        dao.getRegex()
+
+    override suspend fun insertRegex(regex: Regex) {
+        dao.insertRegex(regex)
     }
 
     override suspend fun getConfig(): Config {

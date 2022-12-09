@@ -1,9 +1,6 @@
 package com.nima.common.abstraction
 
-import com.nima.common.database.entitty.Config
-import com.nima.common.database.entitty.RequestUrl
-import com.nima.common.database.entitty.URLIdFirst
-import com.nima.common.database.entitty.URLIdSecond
+import com.nima.common.database.entitty.*
 
 interface MyDaoService {
     suspend fun getAllUrlFirst(): List<URLIdFirst>
@@ -12,6 +9,8 @@ interface MyDaoService {
     suspend fun insertRequestUrl(requestUrl: RequestUrl)
     suspend fun getAllUrlSecond(): List<URLIdSecond>
     suspend fun insertURLSecond(urlIdSecond: URLIdSecond)
-    suspend fun getConfig() : Config
+    suspend fun getRegex(): List<Regex>
+    suspend fun insertRegex(regex: Regex)
+    suspend fun getConfig(): Config
     suspend fun insertConfig(config: Config)
 }

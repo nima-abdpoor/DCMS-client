@@ -4,10 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.nima.common.database.entitty.Config
-import com.nima.common.database.entitty.RequestUrl
-import com.nima.common.database.entitty.URLIdFirst
-import com.nima.common.database.entitty.URLIdSecond
+import com.nima.common.database.entitty.*
 
 @Dao
 interface MyDao {
@@ -32,6 +29,13 @@ interface MyDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertURLIdSecond(vararg ids: URLIdSecond)
+
+    //Regex
+    @Query("SELECT * FROM Regex")
+    fun getRegex(): List<Regex>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertRegex(vararg ids: Regex)
 
     //Config
     @Query("SELECT * FROM Config")
