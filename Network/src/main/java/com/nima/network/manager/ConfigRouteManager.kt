@@ -5,10 +5,7 @@ import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.nima.common.abstraction.MyDaoService
-import com.nima.common.database.entitty.RequestUrl
-import com.nima.common.database.entitty.URLIdFirst
-import com.nima.common.database.entitty.URLIdSecond
-import com.nima.common.database.entitty.toConfig
+import com.nima.common.database.entitty.*
 import com.nima.common.database.getDao
 import com.nima.common.implementation.MyDaoServiceImpl
 import com.nima.common.model.ConfigBody
@@ -21,7 +18,7 @@ import kotlinx.coroutines.runBlocking
 class ConfigRouteManager(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
     private val dbService: MyDaoService
-    private var currentBaseUrl = 0
+    private var currentBaseUrlIndex = 0
 
     init {
         val db = getDao(appContext)
@@ -61,11 +58,12 @@ class ConfigRouteManager(appContext: Context, workerParams: WorkerParameters) :
     }
 
     private suspend fun handleUnsuccessfullResponse(): Result {
+        return Result.failure()
         val urls = readDataFromConfigDataBase()
-        return if (urls.size >= currentBaseUrl
+        return if (urls.size >= currentBaseUrlIndex
         ) {
-            changeBaseUrl(urls[currentBaseUrl])
-            currentBaseUrl++
+            changeBaseUrl(urls[currentBaseUrlIndex])
+            currentBaseUrlIndex++
             Result.retry()
         } else Result.failure()
     }
@@ -80,16 +78,27 @@ class ConfigRouteManager(appContext: Context, workerParams: WorkerParameters) :
         config?.urlIdFirst?.forEachIndexed { index, it ->
             dbService.insertURLFirst(URLIdFirst(id = index.toLong(), urlHash = it.id))
         }
+        var regexId = 0
         config?.urlIdSecond?.forEachIndexed { index, it ->
             dbService.insertURLSecond(
                 URLIdSecond(
                     id = index.toLong(),
-                    urlHash = it.id,
-                    regex = it.regex,
-                    startIndex = it.startIndex,
-                    finishIndex = it.finishIndex
+                    urlHash = it.id
                 )
             )
+            it.regex.forEachIndexed { _, regex ->
+                Log.d("TAG", "storeConfigDataToDataBase: $regex")
+                dbService.insertRegex(
+                    Regex(
+                        id = regexId.toLong(),
+                        urlId = index.toLong(),
+                        regex = regex.regex,
+                        startIndex = regex.startIndex,
+                        finishIndex = regex.finishIndex,
+                    )
+                )
+                regexId++
+            }
         }
         config?.validRequestUrls?.forEachIndexed { index, it ->
             dbService.insertRequestUrl(
