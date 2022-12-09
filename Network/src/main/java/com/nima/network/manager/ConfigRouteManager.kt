@@ -87,7 +87,6 @@ class ConfigRouteManager(appContext: Context, workerParams: WorkerParameters) :
                 )
             )
             it.regex.forEachIndexed { _, regex ->
-                Log.d("TAG", "storeConfigDataToDataBase: $regex")
                 dbService.insertRegex(
                     Regex(
                         id = regexId.toLong(),
