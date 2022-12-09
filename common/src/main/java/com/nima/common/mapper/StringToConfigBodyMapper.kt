@@ -1,14 +1,11 @@
 package com.nima.common.mapper
 
-import com.nima.common.model.ConfigBody
-import com.nima.common.model.ResponseClass
-import com.nima.common.model.UrlIdFirst
-import com.nima.common.model.UrlIdSecond
+import com.nima.common.model.*
 import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 
-fun <T: ResponseClass> ResponseClass.mapToProperModel(result: String): T? {
+fun <T : ResponseClass> ResponseClass.mapToProperModel(result: String): T? {
     return try {
         when (this) {
             is ConfigBody -> result.toConfigBodyMapper()
@@ -37,13 +34,23 @@ fun <T : ResponseClass> String.toConfigBodyMapper(): T {
         urlIdFirst.add(UrlIdFirst(id = (it["url_hash"] as String).toLong()))
     }
     urlIdSecondJson.forEach {
+        val regexes = ArrayList<Regex>()
         it as JSONObject
+        val regexArray = it["Regex"] as JSONArray
+        regexArray.forEach { regexJsonObject ->
+            regexJsonObject as JSONObject
+            regexes.add(
+                Regex(
+                    regex = regexJsonObject["regex"] as String,
+                    startIndex = regexJsonObject["start_index"] as Long,
+                    finishIndex = regexJsonObject["finish_index"] as Long,
+                )
+            )
+        }
         urlIdSecond.add(
             UrlIdSecond(
-                id = (it["url_hash"] as String).toLong(),
-                regex = it["regex"] as String,
-                startIndex = it["start_index"] as Long,
-                finishIndex = it["finish_index"] as Long,
+                id = (it["UrlHash"] as String).toLong(),
+                regex = regexes
             )
         )
     }
