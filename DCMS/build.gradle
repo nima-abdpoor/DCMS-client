@@ -40,6 +40,7 @@ android {
 }
 
 dependencies {
+    testImplementation 'junit:junit:4.12'
     def version_room = "2.5.0-beta02"
     def okhttp_version = "3.12.10"
     implementation project(':Network')
