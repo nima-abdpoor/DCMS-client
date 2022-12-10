@@ -33,26 +33,55 @@ class DCMSInterceptor(context: Context) : Interceptor {
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        val url = chain.request().url().toString()
-        val arr = urlHashFirst?.toLongArray()
-        val hash = converter.convert(url)
-        Log.d("TAG", "intercept: $url")
         if (!deferredRegex.isActive && !deferredUrlFirst.isActive && !deferredUrlSecond.isActive) {
-            arr?.forEach {
-                Log.d("TAG", "intercept: array: $it hash: $hash")
-            }
-            arr?.let {
-                val index = search.findIdFromArray(it, hash)
-                Log.d("TAG", "intercept: index $index")
-                if (index >= 0) {
-                    Log.d("TAG", "intercept:  value: ${arr[index]}")
-                } else {
-                    // TODO: check urlSecond
-                }
-            }
-
+            isUrlExists(chain.request().url().toString())
         }
         return chain.proceed(chain.request())
+    }
+
+    private fun searchInUrlFirst(hash: Long, firstUlrs: LongArray): Boolean {
+        firstUlrs.forEach {
+            Log.d("TAG", "intercept: array: $it hash: $hash")
+        }
+        val index = search.findIdFromArray(firstUlrs, hash)
+        Log.d("TAG", "intercept: index $index")
+        return if (index >= 0) {
+            Log.d("TAG", "intercept:  value: ${firstUlrs[index]}")
+            return true
+        } else false
+    }
+
+    private fun searchInUrlSecond(
+        url: String,
+        hash: Long,
+        urlHashSecond: List<URLIdSecond>?
+    ): Boolean {
+        val urls = urlHashSecond?.map { it.id }
+        urls?.forEachIndexed { index, id ->
+            var acceptedRegexes = 0
+            val regexesForUrl = regexes?.filter { it -> it.urlId == id }
+            regexesForUrl?.forEach { regex ->
+                if (regex.startIndex != null && regex.finishIndex != null && regex.regex != null) {
+                    val changedUrl =
+                        url.subSequence(regex.startIndex!!, regex.finishIndex!!)
+                    if (changedUrl.matches(Regex(regex.regex!!))) {
+                        acceptedRegexes++
+                    }
+                }
+            }
+            if (acceptedRegexes == regexesForUrl?.size && hash == urlHashSecond[index].urlHash) return true
+        }
+        return false
+    }
+
+    private fun isUrlExists(url: String): Boolean {
+        val hash = converter.convert(url)
+        urlHashFirst?.toLongArray()?.let {
+            return if (searchInUrlFirst(hash, it)) true
+            else searchInUrlSecond(url, hash, urlHashSecond)
+        } ?: kotlin.run {
+            return searchInUrlSecond(url, hash, urlHashSecond)
+        }
     }
 
     private fun fetchUrlsFromDatabase() {
@@ -64,6 +93,10 @@ class DCMSInterceptor(context: Context) : Interceptor {
             regexes = deferredRegex.await()
             urlHashSecond = deferredUrlSecond.await()
         }
+    }
+
+    private fun saveUrl() {
+        // TODO:
     }
 
 }
