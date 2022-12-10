@@ -1,6 +1,7 @@
 package com.nima.common
 
 import com.nima.common.mapper.toConfigBodyMapper
+import com.nima.common.model.ConfigBody
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Test
@@ -14,7 +15,7 @@ class StringToConfigBodyMapperKtTest {
 
     @Test
     fun testStringToConfigBody() {
-        val configBody = sampleData.toConfigBodyMapper()
+        val configBody = sampleData.toConfigBodyMapper<ConfigBody>()
         assertNotNull(configBody)
         assertNotNull(configBody.validRequestUrls)
         assertNotNull(configBody.urlIdFirst)
@@ -27,17 +28,12 @@ class StringToConfigBodyMapperKtTest {
             assertEquals("https://requestts", it[1])
         }
         configBody.urlIdFirst?.let {
-            assertEquals(1254444L, it[0].ids)
-            assertEquals(258774111L, it[1].ids)
+            assertEquals(1254444L, it[0].id)
+            assertEquals(258774111L, it[1].id)
         }
         configBody.urlIdSecond?.let {
-            assertEquals(125477L, it[0].ids)
-            assertEquals(0L, it[0].startIndex)
-            assertEquals(1L, it[0].finishIndex)
+            assertEquals(125477L, it[0].id)
             assertEquals("aksdlfja", it[0].regex)
-            assertEquals(158777L, it[1].ids)
-            assertEquals(10L, it[1].startIndex)
-            assertEquals(22L, it[1].finishIndex)
             assertEquals("askldjf", it[1].regex)
         }
         assertEquals(false, configBody.isLive)

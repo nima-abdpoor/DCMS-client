@@ -8,6 +8,6 @@ data class Regex(
     @PrimaryKey var id: Long? = 0,
     var urlId: Long? = 0,
     var regex: String? = null,
-    var startIndex: Long? = null,
-    var finishIndex: Long? = null,
+    var startIndex: Int? = null,
+    var finishIndex: Int? = null,
 )
