@@ -39,7 +39,7 @@ class DCMSInterceptor(context: Context) : Interceptor {
         return chain.proceed(chain.request())
     }
 
-    private fun searchInUrlFirst(hash: Long, firstUlrs: LongArray): Boolean {
+    fun searchInUrlFirst(hash: Long, firstUlrs: LongArray): Boolean {
         firstUlrs.forEach {
             Log.d("TAG", "intercept: array: $it hash: $hash")
         }
@@ -51,7 +51,7 @@ class DCMSInterceptor(context: Context) : Interceptor {
         } else false
     }
 
-    private fun searchInUrlSecond(
+    fun searchInUrlSecond(
         url: String,
         hash: Long,
         urlHashSecond: List<URLIdSecond>?
