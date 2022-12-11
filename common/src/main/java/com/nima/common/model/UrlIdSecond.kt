@@ -7,6 +7,6 @@ data class UrlIdSecond(
 
 data class Regex(
     val regex: String? = null,
-    val startIndex: Long? = null,
-    val finishIndex: Long? = null,
+    val startIndex: Int? = null,
+    val finishIndex: Int? = null,
 )

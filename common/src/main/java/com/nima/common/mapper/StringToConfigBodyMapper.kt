@@ -42,8 +42,8 @@ fun <T : ResponseClass> String.toConfigBodyMapper(): T {
             regexes.add(
                 Regex(
                     regex = regexJsonObject["regex"] as String,
-                    startIndex = regexJsonObject["start_index"] as Long,
-                    finishIndex = regexJsonObject["finish_index"] as Long,
+                    startIndex = regexJsonObject["start_index"] as Int,
+                    finishIndex = regexJsonObject["finish_index"] as Int,
                 )
             )
         }
