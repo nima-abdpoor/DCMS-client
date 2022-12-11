@@ -28,27 +28,7 @@ class DCMSInterceptorTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         interceptor = DCMSInterceptor(appContext)
-        generateUrlHash(numberOfUrlHashes)
         Assert.assertEquals(true, true)
     }
-
-    private fun generateUrlHash(number: Int) {
-        val res = generateString(number, 100)
-        res.forEach {
-            Log.d("TAG", "generateUrlHash: $it")
-        }
-    }
-
-    private fun generateString(number: Int, length: Int): List<String> {
-        val results = ArrayList<String>()
-        val rand = (length / 2..length).random()
-        for (i in 0..number) {
-            results.add(randomStringByKotlinCollectionRandom(rand))
-        }
-        return results
-    }
-
-    private fun randomStringByKotlinCollectionRandom(length: Int) =
-        List(length) { charPool.random() }.joinToString("")
 
 }
