@@ -30,7 +30,7 @@ class DCMSUrlFinderTest {
         firstUrls.forEach {
             println(it)
         }
-        allUrls.forEachIndexed { index, l ->
+        allUrls.forEachIndexed { _, l ->
             val result = finder.searchInUrlFirst(hash = l, firstUlrs = firstUrls)
             Assert.assertEquals(firstUrls.any { it == l }, result)
         }
@@ -59,7 +59,6 @@ class DCMSUrlFinderTest {
         getTestUrlsForUrlSecond().forEach { pair ->
             val actualResult = finder.searchInUrlSecond(
                 url = pair.first,
-                hash = converter.convert(pair.first),
                 urlHashSecond = data.first,
                 regexes = data.second
             )
@@ -71,16 +70,17 @@ class DCMSUrlFinderTest {
     private fun createUrlSecondMockData(): Pair<List<URLIdSecond>, List<Regex>> {
         val urlSeconds = mutableListOf<URLIdSecond>()
         val regexes = mutableListOf(
-            Regex(id = 0, urlId = 0, regex = "([KLD-]+)([\\d+]+)", startIndex = 4, finishIndex = 0),
-            Regex(id = 1, urlId = 1, regex = "([KLD-]+)([\\d+]+)", startIndex = 4, finishIndex = 0),
-            Regex(id = 2, urlId = 2, regex = "([\\d]+)", startIndex = 4, finishIndex = 0),
-            Regex(id = 3, urlId = 3, regex = "([\\d]+)", startIndex = 4, finishIndex = 0),
-            Regex(id = 4, urlId = 4, regex = "([\\d]+)", startIndex = 4, finishIndex = 0),
-            Regex(id = 5, urlId = 5, regex = "([\\d]+)/([\\d]+)", startIndex = 4, finishIndex = 0),
-            Regex(id = 6, urlId = 6, regex = "([\\w]+)", startIndex = 3, finishIndex = 0),
-            Regex(id = 7, urlId = 7, regex = "([\\w]+)", startIndex = 3, finishIndex = 0),
+            Regex(id = 0, urlId = 0, regex = "([KLD-]+)([\\d+]+)", startIndex = 31, finishIndex = 0),
+            Regex(id = 1, urlId = 1, regex = "([KLD-]+)([\\d+]+)", startIndex = 31, finishIndex = 0),
+            Regex(id = 2, urlId = 2, regex = "([\\d]+)", startIndex = 31, finishIndex = 0),
+            Regex(id = 3, urlId = 3, regex = "([\\d]+)", startIndex = 31, finishIndex = 0),
+            Regex(id = 4, urlId = 4, regex = "([\\d]+)", startIndex = 31, finishIndex = 0),
+            Regex(id = 5, urlId = 5, regex = "([\\d]+)/([\\d]+)", startIndex = 31, finishIndex = 0),
+            Regex(id = 6, urlId = 6, regex = "([\\w]+)", startIndex = 20, finishIndex = 0),
+            Regex(id = 7, urlId = 7, regex = "([\\w]+)", startIndex = 20, finishIndex = 0),
         )
         getTestUrlIncludedRegex().forEachIndexed { index, s ->
+            println("s:$s+ ${converter.convert(s)}")
             urlSeconds.add(URLIdSecond(id = index.toLong(), urlHash = converter.convert(s)))
         }
         return Pair<List<URLIdSecond>, List<Regex>>(urlSeconds, regexes)
@@ -88,28 +88,28 @@ class DCMSUrlFinderTest {
 
     private fun getTestUrlsForUrlSecond(): ArrayList<Pair<String, Boolean>> {
         return arrayListOf(
-            Pair("https://jeiran.adanic.me/browse/KLD-2992", true),
-            Pair("https://jeiran.adanic.me/browse/KLD-20252/salam", true),
-            Pair("https://github.com/nima-abdpoor/123", true),
-            Pair("https://github.com/nima-abdpoor/123/asldkf", true),
+            Pair("https://jeiran.adanic.me/browse/KLD-2992/", true),
+            Pair("https://jeiran.adanic.me/browse/KLD-20252/salam/", true),
+            Pair("https://github.com/nima-abdpoor/123/", true),
+            Pair("https://github.com/nima-abdpoor/123/asldkf/", true),
             Pair("https://github.com/nima-abdpoor/123/1111/", true),
             Pair("https://github.com/nima-abdpoor/123/25N/", true),
-            Pair("https://github.com/ahmad", true),
-            Pair("https://github.com/ahmad/nima", true),
+            Pair("https://github.com/ahmad/", true),
+            Pair("https://github.com/ahmad/nima/", true),
         )
     }
 
     //urls that can be retrieved from server. this will be converter to hash
     private fun getTestUrlIncludedRegex(): ArrayList<String> {
         return arrayListOf(
-            "https://jeiran.adanic.me/browse/*" +
-                    "https://jeiran.adanic.me/browse/*/salam" +
-                    "https://github.com/nima-abdpoor/*" +
-                    "https://github.com/nima-abdpoor/*/asldkf" +
-                    "https://github.com/nima-abdpoor/*/1111/" +
-                    "https://github.com/nima-abdpoor/*/25N/" +
-                    "https://github.com/*" +
-                    "https://github.com/*/nima"
+            "https://jeiran.adanic.me/browse/*/",
+            "https://jeiran.adanic.me/browse/*/salam/",
+            "https://github.com/nima-abdpoor/*/",
+            "https://github.com/nima-abdpoor/*/asldkf/",
+            "https://github.com/nima-abdpoor/*/1111/",
+            "https://github.com/nima-abdpoor/*/25N/",
+            "https://github.com/*/",
+            "https://github.com/*/nima/",
         )
     }
 
