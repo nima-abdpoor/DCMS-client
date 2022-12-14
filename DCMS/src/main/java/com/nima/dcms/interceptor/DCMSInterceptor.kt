@@ -42,9 +42,9 @@ class DCMSInterceptor(context: Context) : Interceptor {
         val hash = converter.convert(url)
         urlHashFirst?.let {
             return if (finder.searchInUrlFirst(hash, it)) true
-            else finder.searchInUrlSecond(url, hash, urlHashSecond, regexes)
+            else finder.searchInUrlSecond(url, urlHashSecond, regexes)
         } ?: kotlin.run {
-            return finder.searchInUrlSecond(url, hash, urlHashSecond, regexes)
+            return finder.searchInUrlSecond(url, urlHashSecond, regexes)
         }
     }
 
