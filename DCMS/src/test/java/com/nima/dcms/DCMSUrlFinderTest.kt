@@ -4,34 +4,32 @@ import com.nima.common.database.entitty.Regex
 import com.nima.common.database.entitty.URLIdSecond
 import com.nima.dcms.interceptor.DCMSUrlFinder
 import com.nima.dcms.urlconverter.CR32URLConverter
-import com.nima.dcms.urlconverter.URLConverter
+import junitparams.JUnitParamsRunner
+import junitparams.Parameters
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(JUnitParamsRunner::class)
 class DCMSUrlFinderTest {
-    private lateinit var converter: URLConverter
+    private val converter = CR32URLConverter()
     private val charPool: List<Char> = ('a'..'z') + ('A'..'Z')
     private val numberOfUrlHashes = 10
-    private val numberOfSecondUrlHashes = 20
     private val finder = DCMSUrlFinder()
     private var allUrls = ArrayList<Long>()
     private var firstUrls = ArrayList<Long>()
 
     @Before
     fun initValues() {
-        converter = CR32URLConverter()
         allUrls = generateUrlHash(numberOfUrlHashes) as ArrayList<Long>
         firstUrls = allUrls.filter { it % 2 == 0L } as ArrayList<Long>
     }
 
     @Test
     fun searchInUrlFirstTest() {
-        firstUrls.forEach {
-            println(it)
-        }
         allUrls.forEachIndexed { _, l ->
-            val result = finder.searchInUrlFirst(hash = l, firstUlrs = firstUrls)
+            val result = finder.searchInUrlFirst(hash = l, firstUrls = firstUrls)
             Assert.assertEquals(firstUrls.any { it == l }, result)
         }
     }
@@ -44,73 +42,20 @@ class DCMSUrlFinderTest {
         for (i in 1_000 downTo 0) {
             val t1 = System.currentTimeMillis()
             val result =
-                finder.searchInUrlFirst(hash = allUrls[allUrls.size - (i + 1)], firstUlrs = allUrls)
+                finder.searchInUrlFirst(hash = allUrls[allUrls.size - (i + 1)], firstUrls = allUrls)
             val timeResult = System.currentTimeMillis() - t1
             Assert.assertEquals(allUrls.any { it == allUrls[allUrls.size - (i + 1)] }, result)
             results.add(timeResult)
         }
-        println(results.average())
     }
 
     @Test
-    fun searchInUrlSecondTest() {
-        val data = createUrlSecondMockData()
-        val urls = generateString(numberOfSecondUrlHashes, 105)
-        getTestUrlsForUrlSecond().forEach { pair ->
-            val actualResult = finder.searchInUrlSecond(
-                url = pair.first,
-                urlHashSecond = data.first,
-                regexes = data.second
-            )
-            Assert.assertEquals(pair.second, actualResult)
-        }
-
-    }
-
-    private fun createUrlSecondMockData(): Pair<List<URLIdSecond>, List<Regex>> {
-        val urlSeconds = mutableListOf<URLIdSecond>()
-        val regexes = mutableListOf(
-            Regex(id = 0, urlId = 0, regex = "([KLD-]+)([\\d+]+)", startIndex = 31, finishIndex = 0),
-            Regex(id = 1, urlId = 1, regex = "([KLD-]+)([\\d+]+)", startIndex = 31, finishIndex = 0),
-            Regex(id = 2, urlId = 2, regex = "([\\d]+)", startIndex = 31, finishIndex = 0),
-            Regex(id = 3, urlId = 3, regex = "([\\d]+)", startIndex = 31, finishIndex = 0),
-            Regex(id = 4, urlId = 4, regex = "([\\d]+)", startIndex = 31, finishIndex = 0),
-            Regex(id = 5, urlId = 5, regex = "([\\d]+)", startIndex = 31, finishIndex = 0),
-            Regex(id = 6, urlId = 6, regex = "([\\w]+)", startIndex = 18, finishIndex = 0),
-            Regex(id = 7, urlId = 7, regex = "([\\w]+)", startIndex = 18, finishIndex = 0),
-        )
-        getTestUrlIncludedRegex().forEachIndexed { index, s ->
-            println("s:$s+ ${converter.convert(s)}")
-            urlSeconds.add(URLIdSecond(id = index.toLong(), urlHash = converter.convert(s)))
-        }
-        return Pair<List<URLIdSecond>, List<Regex>>(urlSeconds, regexes)
-    }
-
-    private fun getTestUrlsForUrlSecond(): ArrayList<Pair<String, Boolean>> {
-        return arrayListOf(
-            Pair("https://jeiran.adanic.me/browse/KLD-2992/", true),
-            Pair("https://jeiran.adanic.me/browse/KLD-20252/salam/", true),
-            Pair("https://github.com/nima-abdpoor/123/", true),
-            Pair("https://github.com/nima-abdpoor/123/asldkf/", true),
-            Pair("https://github.com/nima-abdpoor/123/1111/", true),
-            Pair("https://github.com/nima-abdpoor/123/25N/", true),
-            Pair("https://github.com/ahmad/", true),
-            Pair("https://github.com/ahmad/nima/", true),
-        )
-    }
-
-    //urls that can be retrieved from server. this will be converter to hash
-    private fun getTestUrlIncludedRegex(): ArrayList<String> {
-        return arrayListOf(
-            "https://jeiran.adanic.me/browse/*/",
-            "https://jeiran.adanic.me/browse/*/salam/",
-            "https://github.com/nima-abdpoor/*/",
-            "https://github.com/nima-abdpoor/*/asldkf/",
-            "https://github.com/nima-abdpoor/*/1111/",
-            "https://github.com/nima-abdpoor/*/25N/",
-            "https://github.com/*/",
-            "https://github.com/*/nima/",
-        )
+    @Parameters(method = "getUserAPICallsMockData")
+    fun urlFinderClassShouldFindTheSecondUrl(
+        userUrl: String
+    ) {
+        val actualResult = finder.searchInUrlSecond(userUrl, getUrlSWithStarsThatIsMockAsServerUrls().toList(), getRegexMockDataForUrlSecond())
+        Assert.assertEquals(true, actualResult)
     }
 
     private fun generateUrlHash(number: Int): List<Long> {
@@ -129,4 +74,43 @@ class DCMSUrlFinderTest {
 
     private fun randomStringByKotlinCollectionRandom(length: Int) =
         List(length) { charPool.random() }.joinToString("")
+
+    private fun getRegexMockDataForUrlSecond(): List<Regex> {
+        return listOf(
+            Regex(id = 0, urlId = 0, regex = "([KLD-]+)([\\d+]+)", startIndex = 31, finishIndex = 0),
+            Regex(id = 1, urlId = 1, regex = "([KLD-]+)([\\d+]+)", startIndex = 31, finishIndex = 0),
+            Regex(id = 2, urlId = 2, regex = "([\\d]+)", startIndex = 31, finishIndex = 0),
+            Regex(id = 3, urlId = 3, regex = "([\\d]+)", startIndex = 31, finishIndex = 0),
+            Regex(id = 4, urlId = 4, regex = "([\\d]+)", startIndex = 31, finishIndex = 0),
+            Regex(id = 5, urlId = 5, regex = "([\\d]+)", startIndex = 31, finishIndex = 0),
+            Regex(id = 6, urlId = 6, regex = "([\\w]+)", startIndex = 18, finishIndex = 0),
+            Regex(id = 7, urlId = 7, regex = "([\\w]+)", startIndex = 18, finishIndex = 0),
+        )
+    }
+
+    private fun getUrlSWithStarsThatIsMockAsServerUrls(): Array<URLIdSecond> {
+        return arrayOf(
+            URLIdSecond(id = 0, urlHash = converter.convert("https://jeiran.adanic.me/browse/*/")),
+            URLIdSecond(id = 1, urlHash = converter.convert("https://jeiran.adanic.me/browse/*/salam/")),
+            URLIdSecond(id = 2, urlHash = converter.convert("https://github.com/nima-abdpoor/*/")),
+            URLIdSecond(id = 3, urlHash = converter.convert("https://github.com/nima-abdpoor/*/asldkf/")),
+            URLIdSecond(id = 4, urlHash = converter.convert("https://github.com/nima-abdpoor/*/1111/")),
+            URLIdSecond(id = 5, urlHash = converter.convert("https://github.com/nima-abdpoor/*/25N/")),
+            URLIdSecond(id = 6, urlHash = converter.convert("https://github.com/*/")),
+            URLIdSecond(id = 7, urlHash = converter.convert("https://github.com/*/nima/")),
+        )
+    }
+
+    fun getUserAPICallsMockData(): Array<Any> {
+        return arrayOf(
+            "https://jeiran.adanic.me/browse/KLD-2992/",
+            "https://jeiran.adanic.me/browse/KLD-20252/salam/",
+            "https://github.com/nima-abdpoor/123/",
+            "https://github.com/nima-abdpoor/123/asldkf/",
+            "https://github.com/nima-abdpoor/123/1111/",
+            "https://github.com/nima-abdpoor/123/25N/",
+            "https://github.com/ahmad/",
+            "https://github.com/ahmad/nima/"
+        )
+    }
 }

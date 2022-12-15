@@ -1,17 +1,14 @@
 package com.nima.dcms.interceptor
 
 import com.nima.common.database.entitty.URLIdSecond
-import com.nima.dcms.search.BinarySearch
 import com.nima.dcms.urlconverter.CR32URLConverter
 
 class DCMSUrlFinder {
-    private val search = BinarySearch()
     private var converter = CR32URLConverter()
 
-    fun searchInUrlFirst(hash: Long, firstUlrs: List<Long>): Boolean {
-        return firstUlrs.any { it == hash }
+    fun searchInUrlFirst(hash: Long, firstUrls: List<Long>): Boolean {
+        return firstUrls.any { it == hash }
     }
-
 
     fun searchInUrlSecond(
         url: String,
@@ -32,7 +29,6 @@ class DCMSUrlFinder {
                         "*"
                     )
                     val hash = converter.convert(newUrl)
-                    println("newUrl:$newUrl+ ${converter.convert(newUrl)}")
                     val hashSecond = urlHashSecond[index].urlHash
                     if(hash != hashSecond) return@forEachIndexed
                     val changedUrl =
