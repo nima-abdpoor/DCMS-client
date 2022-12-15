@@ -20,20 +20,12 @@ class DCMSUrlFinder {
     ): Boolean {
         val urls = urlHashSecond?.map { it.id }
         urls?.forEachIndexed { index, id ->
-            var acceptedRegexes = 0
             val regexesForUrl = regexes?.filter { it -> it.urlId == id }
             regexesForUrl?.get(0)?.let { regex ->
                 if (regex.startIndex != null && regex.finishIndex != null && regex.regex != null) {
+                    if (url.length <= regex.startIndex!! + 1) return@forEachIndexed
                     val finishIndex =
                         (url.substring(regex.startIndex!! + 1).indexOfFirst { it == '/' })
-                    val changedUrl =
-                        url.subSequence(
-                            regex.startIndex!! + 1,
-                            finishIndex + regex.startIndex!! + 1
-                        )
-                    if (changedUrl.matches(Regex(regex.regex!!))) {
-                        acceptedRegexes++
-                    }
                     val newUrl = url.replaceRange(
                         regex.startIndex!! + 1,
                         finishIndex + regex.startIndex!! + 1,
@@ -42,10 +34,16 @@ class DCMSUrlFinder {
                     val hash = converter.convert(newUrl)
                     println("newUrl:$newUrl+ ${converter.convert(newUrl)}")
                     val hashSecond = urlHashSecond[index].urlHash
-                    return hash == hashSecond
-                } else return false
-            } ?: kotlin.run {
-                return false
+                    if(hash != hashSecond) return@forEachIndexed
+                    val changedUrl =
+                        url.subSequence(
+                            regex.startIndex!! + 1,
+                            finishIndex + regex.startIndex!! + 1
+                        )
+                    if (changedUrl.matches(Regex(regex.regex!!))) {
+                       return true
+                    }
+                }
             }
         }
         return false

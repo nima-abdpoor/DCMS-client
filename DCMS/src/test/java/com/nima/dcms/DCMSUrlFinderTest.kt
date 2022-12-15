@@ -75,9 +75,9 @@ class DCMSUrlFinderTest {
             Regex(id = 2, urlId = 2, regex = "([\\d]+)", startIndex = 31, finishIndex = 0),
             Regex(id = 3, urlId = 3, regex = "([\\d]+)", startIndex = 31, finishIndex = 0),
             Regex(id = 4, urlId = 4, regex = "([\\d]+)", startIndex = 31, finishIndex = 0),
-            Regex(id = 5, urlId = 5, regex = "([\\d]+)/([\\d]+)", startIndex = 31, finishIndex = 0),
-            Regex(id = 6, urlId = 6, regex = "([\\w]+)", startIndex = 20, finishIndex = 0),
-            Regex(id = 7, urlId = 7, regex = "([\\w]+)", startIndex = 20, finishIndex = 0),
+            Regex(id = 5, urlId = 5, regex = "([\\d]+)", startIndex = 31, finishIndex = 0),
+            Regex(id = 6, urlId = 6, regex = "([\\w]+)", startIndex = 18, finishIndex = 0),
+            Regex(id = 7, urlId = 7, regex = "([\\w]+)", startIndex = 18, finishIndex = 0),
         )
         getTestUrlIncludedRegex().forEachIndexed { index, s ->
             println("s:$s+ ${converter.convert(s)}")
