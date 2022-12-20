@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         DCMS(this).init("6660283978")
         val builder = Retrofit
             .Builder()
-            .baseUrl("http://192.168.1.111:8080/")
+            .baseUrl("http://192.168.1.109:8080/")
             .client(createOKHttpClientDefault(this))
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
