@@ -1,26 +1,33 @@
 package com.nima.dcms.interceptor
 
 import android.content.Context
+import android.util.Log
 import com.nima.common.abstraction.MyDaoService
+import com.nima.common.database.entitty.Config
 import com.nima.common.database.entitty.Regex
 import com.nima.common.database.entitty.URLIdSecond
 import com.nima.common.database.getDao
 import com.nima.common.implementation.MyDaoServiceImpl
+import com.nima.dcms.ext.getFormattedRequestString
+import com.nima.dcms.ext.getFormattedResponseString
 import com.nima.dcms.urlconverter.CR32URLConverter
 import com.nima.dcms.urlconverter.URLConverter
 import kotlinx.coroutines.*
 import okhttp3.Interceptor
+import okhttp3.Request
 import okhttp3.Response
 
 class DCMSInterceptor(context: Context) : Interceptor {
     private lateinit var deferredUrlFirst: Deferred<List<Long>>
     private lateinit var deferredUrlSecond: Deferred<List<URLIdSecond>>
     private lateinit var deferredRegex: Deferred<List<Regex>>
+    private lateinit var deferredConfig: Deferred<Config>
     private val finder = DCMSUrlFinder()
-    private lateinit var dbService: MyDaoService
+    private var dbService: MyDaoService
     private var urlHashFirst: List<Long>? = null
     private var urlHashSecond: List<URLIdSecond>? = null
     private var regexes: List<Regex>? = null
+    private var config: Config? = null
     private var converter: URLConverter
 
     init {
@@ -31,10 +38,20 @@ class DCMSInterceptor(context: Context) : Interceptor {
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        if (!deferredRegex.isActive && !deferredUrlFirst.isActive && !deferredUrlSecond.isActive) {
-            isUrlExists(chain.request().url().toString())
+        val startTime = System.currentTimeMillis()
+        val result = chain.proceed(chain.request())
+        val finishTime = System.currentTimeMillis()
+        CoroutineScope(Dispatchers.IO).launch {
+            if (!deferredRegex.isActive && !deferredUrlFirst.isActive && !deferredUrlSecond.isActive) {
+                if (isUrlExists(chain.request().url().toString())) saveUrl(
+                    chain.request(),
+                    result,
+                    startTime,
+                    finishTime
+                )
+            }
         }
-        return chain.proceed(chain.request())
+        return result
     }
 
 
@@ -53,14 +70,24 @@ class DCMSInterceptor(context: Context) : Interceptor {
             deferredUrlFirst = async { dbService.getAllUrlFirst().map { it.urlHash ?: 0 } }
             deferredUrlSecond = async { dbService.getAllUrlSecond() }
             deferredRegex = async { dbService.getRegex() }
+            deferredConfig = async { dbService.getConfig() }
             urlHashFirst = deferredUrlFirst.await()
             regexes = deferredRegex.await()
             urlHashSecond = deferredUrlSecond.await()
+            config = deferredConfig.await()
         }
     }
 
-    private fun saveUrl() {
-        // TODO:
+    private fun saveUrl(request: Request, result: Response, startTime: Long, finishTime: Long) {
+        config?.let { it ->
+            val sb = StringBuilder("{")
+            if ((it.saveError && !result.isSuccessful) || (it.saveSuccess && result.isSuccessful)) {
+                if (it.saveRequest) sb.append(request.getFormattedRequestString(startTime.toString()))
+                if (it.saveResponse) sb.append(result.getFormattedResponseString(finishTime.toString()))
+            }
+            sb.replace(sb.length - 2, sb.length - 1, "}")
+            Log.d("TAG", "saadfveUrl: $sb")
+        }
     }
 
 }

@@ -1,6 +1,5 @@
 package com.nima.dcms
 
-import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.nima.dcms.interceptor.DCMSInterceptor

@@ -59,6 +59,10 @@ fun <T : ResponseClass> String.toConfigBodyMapper(): T {
         urlIdFirst = urlIdFirst,
         urlIdSecond = urlIdSecond,
         isLive = configJson["is_live"] as Boolean,
-        syncType = configJson["sync_type"] as String
+        syncType = configJson["sync_type"] as String,
+        saveRequest = configJson["saveRequest"] as Boolean,
+        saveResponse = configJson["saveResponse"] as Boolean,
+        saveError = configJson["saveError"] as Boolean,
+        saveSuccess = configJson["saveSuccess"] as Boolean,
     ) as T
 }
