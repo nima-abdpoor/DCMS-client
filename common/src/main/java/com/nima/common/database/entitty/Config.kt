@@ -9,6 +9,10 @@ data class Config(
     @PrimaryKey var id: Long = 0,
     var isLive: Boolean? = false,
     var syncType: NetWorkSyncType? = NetWorkSyncType.Default,
+    var saveRequest: Boolean = false,
+    var saveResponse: Boolean = false,
+    var saveError: Boolean = true,
+    var saveSuccess: Boolean = false,
 )
 
 enum class NetWorkSyncType(value: String) {

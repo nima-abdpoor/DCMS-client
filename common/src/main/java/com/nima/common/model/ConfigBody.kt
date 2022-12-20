@@ -8,5 +8,9 @@ data class ConfigBody(
     val urlIdFirst: List<UrlIdFirst>? = null,
     val urlIdSecond: List<UrlIdSecond>? = null,
     val isLive: Boolean? = false,
-    var syncType: String? = "0"
+    var syncType: String? = "0",
+    var saveRequest: Boolean = false,
+    var saveResponse: Boolean = false,
+    var saveError: Boolean = true,
+    var saveSuccess: Boolean = true,
 ) : ResponseClass()
