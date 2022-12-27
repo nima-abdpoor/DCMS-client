@@ -37,7 +37,11 @@ fun ConfigBody?.toConfig(): Config {
         return Config(
             id = 0,
             isLive = isLive,
-            syncType = syncType?.toNetWorkSyncType() ?: NetWorkSyncType.Default
+            syncType = syncType?.toNetWorkSyncType() ?: NetWorkSyncType.Default,
+            saveRequest = saveRequest,
+            saveResponse = saveResponse,
+            saveError = saveError,
+            saveSuccess = saveSuccess,
         )
     } ?: kotlin.run {
         return Config(

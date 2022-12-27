@@ -42,8 +42,8 @@ fun <T : ResponseClass> String.toConfigBodyMapper(): T {
             regexes.add(
                 Regex(
                     regex = regexJsonObject["regex"] as String,
-                    startIndex = regexJsonObject["start_index"] as Int,
-                    finishIndex = regexJsonObject["finish_index"] as Int,
+                    startIndex = (regexJsonObject["start_index"] as Long).toInt(),
+                    finishIndex = (regexJsonObject["finish_index"] as Long).toInt(),
                 )
             )
         }
@@ -60,9 +60,9 @@ fun <T : ResponseClass> String.toConfigBodyMapper(): T {
         urlIdSecond = urlIdSecond,
         isLive = configJson["is_live"] as Boolean,
         syncType = configJson["sync_type"] as String,
-        saveRequest = configJson["saveRequest"] as Boolean,
-        saveResponse = configJson["saveResponse"] as Boolean,
-        saveError = configJson["saveError"] as Boolean,
-        saveSuccess = configJson["saveSuccess"] as Boolean,
+        saveRequest = configJson["save_request"] as Boolean,
+        saveResponse = configJson["save_response"] as Boolean,
+        saveError = configJson["save_error"] as Boolean,
+        saveSuccess = configJson["save_success"] as Boolean,
     ) as T
 }
