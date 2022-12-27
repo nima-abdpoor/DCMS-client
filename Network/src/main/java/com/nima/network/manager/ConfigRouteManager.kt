@@ -7,9 +7,11 @@ import androidx.work.WorkerParameters
 import com.nima.common.abstraction.MyDaoService
 import com.nima.common.database.entitty.*
 import com.nima.common.database.getDao
+import com.nima.common.database.sharedpref.SharedPreferencesHelper
 import com.nima.common.implementation.MyDaoServiceImpl
 import com.nima.common.model.ConfigBody
 import com.nima.common.utils.BASE_URL
+import com.nima.common.utils.CONFIG_URL
 import com.nima.network.manager.model.HttpMethods
 import com.nima.network.manager.request.HttpRequestBuilder
 import com.nima.network.manager.wrapper.ResultWrapper
@@ -17,6 +19,7 @@ import kotlinx.coroutines.runBlocking
 
 class ConfigRouteManager(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
+    private val pref = SharedPreferencesHelper()
     private val dbService: MyDaoService
     private var currentBaseUrlIndex = 0
 
@@ -32,7 +35,7 @@ class ConfigRouteManager(appContext: Context, workerParams: WorkerParameters) :
 
     private fun callConfigRoute() = runBlocking {
         val request = HttpRequestBuilder()
-            .setUrl("$BASE_URL/config")
+            .setUrl(CONFIG_URL + pref.getUniqueId())
             .setMethod(HttpMethods.GET)
             .submit<ConfigBody>(ConfigBody())
         when (request) {
