@@ -30,14 +30,21 @@ class MainActivity : AppCompatActivity() {
         DCMS(this).init("6660283978")
         val builder = Retrofit
             .Builder()
-            .baseUrl("http://192.168.43.230:8080/")
+            .baseUrl("https://dummyjson.com/")
             .client(createOKHttpClientDefault(this))
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
         val retro = builder.create(API::class.java)
         CoroutineScope(Dispatchers.IO).launch {
-            val res = retro.getFavorites()
-            Log.d("TAG", "onCreate: ${res.body()}")
+            retro.apply {
+                getProducts()
+                getCart()
+                getSpecificProduct()
+                getProductWithCategory()
+                getProductSearchPhone()
+                searchProduct()
+            }
+//            Log.d("TAG", "onCreate: ${res.body()}")
         }
     }
 }
