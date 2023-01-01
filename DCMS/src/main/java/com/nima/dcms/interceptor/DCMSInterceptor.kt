@@ -12,11 +12,11 @@ import com.nima.common.model.DCMSResponseBody
 import com.nima.dcms.ext.cleanURL
 import com.nima.dcms.ext.getFormattedRequestString
 import com.nima.dcms.ext.getFormattedResponseString
+import com.nima.dcms.ext.toJsonFormat
 import com.nima.dcms.urlconverter.CR32URLConverter
 import com.nima.dcms.urlconverter.URLConverter
 import kotlinx.coroutines.*
 import okhttp3.Interceptor
-import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 
@@ -48,15 +48,27 @@ class DCMSInterceptor(context: Context) : Interceptor {
         val content = response.body()?.string()
         val wrappedBody = ResponseBody.create(contentType, content ?: "")
         CoroutineScope(Dispatchers.IO).launch {
+            val request = chain.request()
             if (!deferredRegex.isActive && !deferredUrlFirst.isActive && !deferredUrlSecond.isActive) {
-                if (isUrlExists(chain.request().url().toString().cleanURL())) saveUrl(
-                    chain.request(),
+                if (isUrlExists(request.url().toString().cleanURL())) saveUrl(
+                    DCMSResponseBody(
+                        isSuccessful = false,
+                        code = "0",
+                        method = request.method(),
+                        url = request.url().toString(),
+                        body = request.body().toString(),
+                        headers = request.headers().toJsonFormat(),
+                        time = startTime.toString(),
+                    ),
                     DCMSResponseBody(
                         isSuccessful = response.isSuccessful,
                         code = response.code().toString(),
                         body = content ?: "",
-                        headers = response.headers().toString(),
-                        time = finishTime.toString()),
+                        headers = response.headers().toJsonFormat(),
+                        time = finishTime.toString(),
+                        url = "",
+                        method = "",
+                    ),
                     startTime,
                 )
             }
@@ -88,15 +100,15 @@ class DCMSInterceptor(context: Context) : Interceptor {
         }
     }
 
-    private fun saveUrl(request: Request, result: DCMSResponseBody, startTime: Long) {
+    private fun saveUrl(request: DCMSResponseBody, result: DCMSResponseBody, startTime: Long) {
         config?.let { it ->
             val sb = StringBuilder("{")
             if ((it.saveError && !result.isSuccessful) || (it.saveSuccess && result.isSuccessful)) {
                 if (it.saveRequest) sb.append(request.getFormattedRequestString(startTime.toString()))
                 if (it.saveResponse) sb.append(result.getFormattedResponseString())
             }
-            sb.replace(sb.length - 2, sb.length - 1, "}")
-            Log.d("TAG", "saadfveUrl: $sb")
+            val adsf = sb.replace(sb.length - 2, sb.length - 1, "\"}")
+            Log.d("TAG", "saadfveUrl: $adsf")
         }
     }
 
