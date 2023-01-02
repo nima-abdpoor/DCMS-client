@@ -7,6 +7,7 @@ import com.nima.common.database.entitty.Config
 import com.nima.common.database.entitty.Regex
 import com.nima.common.database.entitty.URLIdSecond
 import com.nima.common.database.getDao
+import com.nima.common.file.FileManager
 import com.nima.common.implementation.MyDaoServiceImpl
 import com.nima.common.model.DCMSResponseBody
 import com.nima.dcms.ext.cleanURL
@@ -32,6 +33,7 @@ class DCMSInterceptor(context: Context) : Interceptor {
     private var regexes: List<Regex>? = null
     private var config: Config? = null
     private var converter: URLConverter
+    private val fileManager = FileManager(context)
 
     init {
         val db = getDao(context)
@@ -109,6 +111,7 @@ class DCMSInterceptor(context: Context) : Interceptor {
             }
             val adsf = sb.replace(sb.length - 2, sb.length - 1, "\"}")
             Log.d("TAG", "saadfveUrl: $adsf")
+            fileManager.writeIntoFile(adsf.toString() + "\n")
         }
     }
 
