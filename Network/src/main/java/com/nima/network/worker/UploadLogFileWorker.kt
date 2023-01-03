@@ -14,7 +14,6 @@ class UploadLogFileWorker(private val appContext: Context, workerParams: WorkerP
     private val pref = SharedPreferencesHelper()
     private val fileManager = FileManager(appContext)
     private val request = FileUploaderHttpRequestBuilder(BASE_URL + UPLOAD_LOG_FILE_URL)
-    private var currentBaseUrlIndex = 0
 
 
     override fun doWork(): Result {
@@ -23,16 +22,13 @@ class UploadLogFileWorker(private val appContext: Context, workerParams: WorkerP
 
     private fun callUploadFileRout(): Result {
         getFileWhichIsReadyToUpload()?.let { fileName ->
-            val currentFile = appContext.packageName + "-" + DCMS_FILE_NAME + "-" + fileName
             return try {
-                pref.saveFileStatus(fileName, true)
-                request.addFilePart("log", appContext, currentFile)
+                request.addFilePart("log", appContext, appContext.getFullLoggedFileName(fileName))
                 val response = request.finish()
-                fileManager.writeIntoFile("")
+                fileManager.writeIntoFile("", fileName)
                 Result.success()
             } catch (e: Exception) {
                 Log.d("TAG", "callUploadFileRout: ${e.message}")
-                pref.saveFileStatus(fileName, false)
                 Result.retry()
             }
         } ?: kotlin.run {
