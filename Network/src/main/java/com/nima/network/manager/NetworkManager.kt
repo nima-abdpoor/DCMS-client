@@ -4,19 +4,27 @@ import android.content.Context
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
+import com.nima.network.worker.ConfigRouteWorker
+import com.nima.network.worker.UploadLogFileWorker
 
 class NetworkManager(private val context: Context) {
-    private val uploadWorkRequest: WorkRequest
+    private val getConfigWorker: WorkRequest
+    private val uploadLogFileWorker: WorkRequest
 
     init {
-        uploadWorkRequest =
-            OneTimeWorkRequestBuilder<ConfigRouteManager>()
+        getConfigWorker =
+            OneTimeWorkRequestBuilder<ConfigRouteWorker>()
+                .build()
+        uploadLogFileWorker =
+            OneTimeWorkRequestBuilder<UploadLogFileWorker>()
                 .build()
     }
 
     fun submitWork() {
-        val result = WorkManager
+        var result = WorkManager
             .getInstance(context)
-            .enqueue(uploadWorkRequest)
+            .enqueue(getConfigWorker)
+
+        result = WorkManager.getInstance(context).enqueue(uploadLogFileWorker)
     }
 }
