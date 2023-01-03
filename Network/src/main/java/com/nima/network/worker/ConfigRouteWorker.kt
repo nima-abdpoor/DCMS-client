@@ -1,4 +1,4 @@
-package com.nima.network.manager
+package com.nima.network.worker
 
 import android.content.Context
 import android.util.Log
@@ -17,7 +17,7 @@ import com.nima.network.manager.request.HttpRequestBuilder
 import com.nima.network.manager.wrapper.ResultWrapper
 import kotlinx.coroutines.runBlocking
 
-class ConfigRouteManager(appContext: Context, workerParams: WorkerParameters) :
+class ConfigRouteWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
     private val pref = SharedPreferencesHelper()
     private val dbService: MyDaoService
@@ -30,6 +30,7 @@ class ConfigRouteManager(appContext: Context, workerParams: WorkerParameters) :
 
     override fun doWork(): Result {
         return callConfigRoute()
+
     }
 //    192.168.43.145, 192.168.1.111
 
