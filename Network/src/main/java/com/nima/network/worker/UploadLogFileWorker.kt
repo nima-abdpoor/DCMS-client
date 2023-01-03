@@ -29,6 +29,7 @@ class UploadLogFileWorker(private val appContext: Context, workerParams: WorkerP
                 Result.success()
             } catch (e: Exception) {
                 Log.d("TAG", "callUploadFileRout: ${e.message}")
+                pref.saveFileStatus(fileName,false)
                 Result.retry()
             }
         } ?: kotlin.run {

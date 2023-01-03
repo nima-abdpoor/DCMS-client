@@ -13,16 +13,17 @@ class FileManager(private val context: Context) {
         val fileName = getProperFileName()
         fileName?.let { file ->
             pref.saveFileStatus(file, true)
-            context.openFileOutput(file, Context.MODE_APPEND).use { output ->
-                output.write(text.toByteArray())
-            }
+            context.openFileOutput(context.getFullLoggedFileName(file), Context.MODE_APPEND)
+                .use { output ->
+                    output.write(text.toByteArray())
+                }
             pref.saveFileStatus(fileName, false)
         }
     }
 
     fun writeIntoFile(text: String, fileName: String) {
         pref.saveFileStatus(fileName, true)
-        context.openFileOutput(context.getFullLoggedFileName(fileName), Context.MODE_APPEND)
+        context.openFileOutput(context.getFullLoggedFileName(fileName), Context.MODE_PRIVATE)
             .use { output ->
                 output.write(text.toByteArray())
             }
