@@ -38,15 +38,15 @@ class ConfigRouteWorker(appContext: Context, workerParams: WorkerParameters) :
         val request = HttpRequestBuilder()
             .setUrl(CONFIG_URL + pref.getUniqueId())
             .setMethod(HttpMethods.GET)
-            .submit<ConfigBody>(ConfigBody())
+            .submit<ConfigBody>()
         when (request) {
             is ResultWrapper.GenericError -> {
                 Log.d("TAG", "uploadDataTest:GenericError ${request.error}")
-                return@runBlocking handleUnsuccessfullResponse()
+                return@runBlocking handleUnsuccessfulResponse()
             }
             is ResultWrapper.NetworkError -> {
                 Log.d("TAG", "uploadDataTest:NetworkError ${request.error}")
-                return@runBlocking handleUnsuccessfullResponse()
+                return@runBlocking handleUnsuccessfulResponse()
             }
             is ResultWrapper.Success -> {
                 val config = request.value?.body
@@ -61,7 +61,7 @@ class ConfigRouteWorker(appContext: Context, workerParams: WorkerParameters) :
         }
     }
 
-    private suspend fun handleUnsuccessfullResponse(): Result {
+    private suspend fun handleUnsuccessfulResponse(): Result {
         return Result.failure()
         val urls = readDataFromConfigDataBase()
         return if (urls.size >= currentBaseUrlIndex

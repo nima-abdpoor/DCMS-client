@@ -8,7 +8,7 @@ fun DCMSResponseBody.getFormattedRequestString(time: String): String {
 }
 
 fun DCMSResponseBody.getFormattedResponseString(): String {
-    return "\"response\":{\"body\":\"${"body"}\",\"code\":\"${code}\",\"header\":${headers}\"requestTime\":\"${time}\"}"
+    return "\"response\":{\"body\":\"${body}\",\"code\":\"${code}\",\"header\":${headers}\"requestTime\":\"${time}\"}"
 }
 
 
