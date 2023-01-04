@@ -7,15 +7,21 @@ import com.nima.common.database.entitty.Config
 import com.nima.common.database.entitty.Regex
 import com.nima.common.database.entitty.URLIdSecond
 import com.nima.common.database.getDao
+import com.nima.common.database.sharedpref.SharedPreferencesHelper
 import com.nima.common.file.FileManager
 import com.nima.common.implementation.MyDaoServiceImpl
 import com.nima.common.model.DCMSResponseBody
+import com.nima.common.utils.BASE_URL
+import com.nima.common.utils.SEND_LOG_URL
 import com.nima.dcms.ext.cleanURL
 import com.nima.dcms.ext.getFormattedRequestString
 import com.nima.dcms.ext.getFormattedResponseString
 import com.nima.dcms.ext.toJsonFormat
 import com.nima.dcms.urlconverter.CR32URLConverter
 import com.nima.dcms.urlconverter.URLConverter
+import com.nima.network.manager.model.HttpMethods
+import com.nima.network.manager.request.HttpRequestBuilder
+import com.nima.network.manager.wrapper.ResultWrapper
 import kotlinx.coroutines.*
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -34,6 +40,7 @@ class DCMSInterceptor(context: Context) : Interceptor {
     private var config: Config? = null
     private var converter: URLConverter
     private val fileManager = FileManager(context)
+    private val pref = SharedPreferencesHelper()
 
     init {
         val db = getDao(context)
@@ -52,7 +59,7 @@ class DCMSInterceptor(context: Context) : Interceptor {
         CoroutineScope(Dispatchers.IO).launch {
             val request = chain.request()
             if (!deferredRegex.isActive && !deferredUrlFirst.isActive && !deferredUrlSecond.isActive) {
-                if (isUrlExists(request.url().toString().cleanURL())) saveUrl(
+                if (isUrlExists(request.url().toString().cleanURL())) mergeRequestAndResponse(
                     DCMSResponseBody(
                         isSuccessful = false,
                         code = "0",
@@ -72,7 +79,9 @@ class DCMSInterceptor(context: Context) : Interceptor {
                         method = "",
                     ),
                     startTime,
-                )
+                )?.let {
+                    saveOrSendLog(it.toString())
+                }
             }
         }
         return response.newBuilder().body(wrappedBody).build()
@@ -102,17 +111,50 @@ class DCMSInterceptor(context: Context) : Interceptor {
         }
     }
 
-    private fun saveUrl(request: DCMSResponseBody, result: DCMSResponseBody, startTime: Long) {
-        config?.let { it ->
-            val sb = StringBuilder("{")
-            if ((it.saveError && !result.isSuccessful) || (it.saveSuccess && result.isSuccessful)) {
-                if (it.saveRequest) sb.append(request.getFormattedRequestString(startTime.toString()))
-                if (it.saveResponse) sb.append(result.getFormattedResponseString())
-            }
-            val adsf = sb.replace(sb.length - 2, sb.length - 1, "\"}")
-            Log.d("TAG", "saadfveUrl: $adsf")
-            fileManager.writeIntoFile(adsf.toString() + "\n")
-        }
+    private fun saveUrl(log: String) {
+        fileManager.writeIntoFile(log + "\n")
     }
 
+    private fun mergeRequestAndResponse(request: DCMSResponseBody, response: DCMSResponseBody, startTime: Long): java.lang.StringBuilder? {
+        config?.let { it ->
+            val sb = StringBuilder("{")
+            if ((it.saveError && !response.isSuccessful) || (it.saveSuccess && response.isSuccessful)) {
+                if (it.saveRequest) sb.append(request.getFormattedRequestString(startTime.toString()))
+                if (it.saveResponse) sb.append(response.getFormattedResponseString())
+            }
+            return sb.replace(sb.length - 2, sb.length - 1, "\"}")
+        }
+        return null
+    }
+
+    private fun saveOrSendLog(
+        log: String
+    ) {
+        if (config?.isLive == true) {
+            if (!sendLogToServer(log)) saveUrl(log)
+        } else
+            saveUrl(log)
+    }
+
+    private fun sendLogToServer(log: String) = runBlocking {
+        val request = HttpRequestBuilder()
+            .setUrl(BASE_URL + SEND_LOG_URL + pref.getUniqueId())
+            .setMethod(HttpMethods.POST)
+            .setPostData(log)
+            .submit<Void>()
+        when (request) {
+            is ResultWrapper.GenericError -> {
+                Log.d("TAG", "sendLogToServer:GenericError ${request.error}")
+                return@runBlocking false
+            }
+            is ResultWrapper.NetworkError -> {
+                Log.d("TAG", "sendLogToServer:NetworkError ${request.error}")
+                return@runBlocking false
+            }
+            is ResultWrapper.Success -> {
+                Log.d("TAG", "sendLogToServer: Success")
+                return@runBlocking true
+            }
+        }
+    }
 }
