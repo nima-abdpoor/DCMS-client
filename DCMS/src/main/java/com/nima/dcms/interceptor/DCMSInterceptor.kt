@@ -1,7 +1,6 @@
 package com.nima.dcms.interceptor
 
 import android.content.Context
-import android.util.Log
 import com.nima.common.abstraction.MyDaoService
 import com.nima.common.database.entitty.Config
 import com.nima.common.database.entitty.Regex
@@ -19,9 +18,7 @@ import com.nima.dcms.ext.getFormattedResponseString
 import com.nima.dcms.ext.toJsonFormat
 import com.nima.dcms.urlconverter.CR32URLConverter
 import com.nima.dcms.urlconverter.URLConverter
-import com.nima.network.manager.model.HttpMethods
-import com.nima.network.manager.request.HttpRequestBuilder
-import com.nima.network.manager.wrapper.ResultWrapper
+import com.nima.network.manager.request.FileUploaderHttpRequestBuilder
 import kotlinx.coroutines.*
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -115,7 +112,11 @@ class DCMSInterceptor(context: Context) : Interceptor {
         fileManager.writeIntoFile(log + "\n")
     }
 
-    private fun mergeRequestAndResponse(request: DCMSResponseBody, response: DCMSResponseBody, startTime: Long): java.lang.StringBuilder? {
+    private fun mergeRequestAndResponse(
+        request: DCMSResponseBody,
+        response: DCMSResponseBody,
+        startTime: Long
+    ): java.lang.StringBuilder? {
         config?.let { it ->
             val sb = StringBuilder("{")
             if ((it.saveError && !response.isSuccessful) || (it.saveSuccess && response.isSuccessful)) {
@@ -130,31 +131,24 @@ class DCMSInterceptor(context: Context) : Interceptor {
     private fun saveOrSendLog(
         log: String
     ) {
-        if (config?.isLive == true) {
-            if (!sendLogToServer(log)) saveUrl(log)
-        } else
-            saveUrl(log)
+        CoroutineScope(Dispatchers.IO).launch {
+            if (config?.isLive == true) {
+                if (!sendLogToServer(log)) saveUrl(log)
+            } else
+                saveUrl(log)
+        }
     }
 
     private fun sendLogToServer(log: String) = runBlocking {
-        val request = HttpRequestBuilder()
-            .setUrl(BASE_URL + SEND_LOG_URL + pref.getUniqueId())
-            .setMethod(HttpMethods.POST)
-            .setPostData(log)
-            .submit<Void>()
-        when (request) {
-            is ResultWrapper.GenericError -> {
-                Log.d("TAG", "sendLogToServer:GenericError ${request.error}")
-                return@runBlocking false
-            }
-            is ResultWrapper.NetworkError -> {
-                Log.d("TAG", "sendLogToServer:NetworkError ${request.error}")
-                return@runBlocking false
-            }
-            is ResultWrapper.Success -> {
-                Log.d("TAG", "sendLogToServer: Success")
-                return@runBlocking true
-            }
+        try {
+            val request =
+                FileUploaderHttpRequestBuilder(BASE_URL + SEND_LOG_URL + pref.getUniqueId())
+            request.addFormField("", log)
+            request.addFormField("Content-Length", log.length.toString())
+            request.finish()
+            return@runBlocking true
+        } catch (e: Exception) {
+            return@runBlocking false
         }
     }
 }

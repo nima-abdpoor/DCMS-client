@@ -38,7 +38,7 @@ class ConfigRouteWorker(appContext: Context, workerParams: WorkerParameters) :
         val request = HttpRequestBuilder()
             .setUrl(CONFIG_URL + pref.getUniqueId())
             .setMethod(HttpMethods.GET)
-            .submit<ConfigBody>()
+            .submit<ConfigBody>(ConfigBody())
         when (request) {
             is ResultWrapper.GenericError -> {
                 Log.d("TAG", "uploadDataTest:GenericError ${request.error}")

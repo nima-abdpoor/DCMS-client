@@ -21,6 +21,9 @@ class HttpRequestBuilder : HttpRequestBuilderInterface {
     private var readTimeOut = READ_TIME_OUT
     private var connectTimeOut = CONNECT_TIME_OUT
     private var postData = ""
+    private val boundary = "*****"
+    private val crlf = "\r\n"
+    private val twoHyphens = "--"
 
     override fun setUrl(url: String): HttpRequestBuilderInterface {
         httpRequestBuilder.requestUrl = url
@@ -71,6 +74,9 @@ class HttpRequestBuilder : HttpRequestBuilderInterface {
                         val outputStream: OutputStream =
                             BufferedOutputStream(httpURLConnection.outputStream)
                         val outputStreamWriter = OutputStreamWriter(outputStream)
+                        outputStreamWriter.write(twoHyphens + boundary + crlf)
+                        outputStreamWriter.write("Content-Type: text/plain; charset=UTF-8$crlf")
+                        outputStreamWriter.write("Content-Length:${postData.length}")
                         outputStreamWriter.write(postData)
                         outputStreamWriter.flush()
                         outputStreamWriter.close()
