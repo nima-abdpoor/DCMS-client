@@ -1,4 +1,4 @@
-package com.nima.network.manager
+package com.nima.network.workmanager
 
 import androidx.work.*
 import java.util.concurrent.TimeUnit

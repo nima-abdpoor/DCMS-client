@@ -1,4 +1,4 @@
-package com.nima.network.manager
+package com.nima.network.workmanager
 
 import android.content.Context
 import androidx.work.WorkManager
