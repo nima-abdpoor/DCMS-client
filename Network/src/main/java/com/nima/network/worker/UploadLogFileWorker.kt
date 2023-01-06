@@ -17,6 +17,7 @@ class UploadLogFileWorker(private val appContext: Context, workerParams: WorkerP
 
 
     override fun doWork(): Result {
+        pref.saveUploadLogWorkerStatus(SharedPreferencesHelper.WorkerStatus.Started)
         return callUploadFileRout()
     }
 

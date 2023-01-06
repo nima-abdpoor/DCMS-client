@@ -29,8 +29,8 @@ class ConfigRouteWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     override fun doWork(): Result {
+        pref.saveGetConfigWorkerStatus(SharedPreferencesHelper.WorkerStatus.Started)
         return callConfigRoute()
-
     }
 //    192.168.43.145, 192.168.1.111
 
