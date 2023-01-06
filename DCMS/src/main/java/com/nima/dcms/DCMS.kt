@@ -2,16 +2,19 @@ package com.nima.dcms
 
 import android.content.Context
 import com.nima.common.abstraction.MyDaoService
-import com.nima.common.database.sharedpref.SharedPreferences
 import com.nima.common.database.entitty.Config
 import com.nima.common.database.getDao
 import com.nima.common.database.sharedpref.SharedPreferencesHelper
 import com.nima.common.implementation.MyDaoServiceImpl
-import com.nima.common.utils.UNIQUE_ID_KEY
-import com.nima.network.manager.NetworkManager
+import com.nima.common.utils.DEFAULT_REPEAT_INTERVAL_WORKER_TIME
+import com.nima.common.utils.DEFAULT_REPEAT_INTERVAL_WORK_TIME_UNIT
+import com.nima.network.workmanager.NetworkManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 class DCMS(private val ctx: Context) {
-    private val manager: NetworkManager = NetworkManager(ctx)
     private lateinit var dbService: MyDaoService
     private val pref = SharedPreferencesHelper()
     fun init(uniqueId: String, vararg info: String) {
@@ -19,7 +22,17 @@ class DCMS(private val ctx: Context) {
         saveUniqueId(uniqueId)
         val db = getDao(ctx)
         dbService = MyDaoServiceImpl(db)
-        manager.submitWork()
+        CoroutineScope(Dispatchers.IO).launch {
+            val deferredConfig = async { readDataFromConfigDataBase() }
+            val config = deferredConfig.await()
+            val manager = NetworkManager(
+                ctx,
+                DEFAULT_REPEAT_INTERVAL_WORKER_TIME,
+                DEFAULT_REPEAT_INTERVAL_WORK_TIME_UNIT
+            )
+            manager.submitWork()
+        }
+
         // TODO: sending users information beside special uniqueId to get more information
     }
 
@@ -27,12 +40,12 @@ class DCMS(private val ctx: Context) {
         pref.saveUniqueId(uniqueId)
     }
 
-    fun init() {
-        SharedPreferences.initSecureSharedPref(ctx)
-        val db = getDao(ctx)
-        dbService = MyDaoServiceImpl(db)
-        manager.submitWork()
-    }
+//    fun init() {
+//        SharedPreferences.initSecureSharedPref(ctx)
+//        val db = getDao(ctx)
+//        dbService = MyDaoServiceImpl(db)
+//        manager.submitWork()
+//    }
 
     private suspend fun readDataFromConfigDataBase(): Config {
         return dbService.getConfig()
