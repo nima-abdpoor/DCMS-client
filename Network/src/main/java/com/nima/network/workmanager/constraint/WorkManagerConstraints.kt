@@ -13,21 +13,21 @@ class WorkManagerConstraints {
         constraints.setRequiredNetworkType(getNetworkTypeByString(type))
     }
 
-    fun setBatteryNotLow(requiresBatteryNotLow: Boolean){
+    fun setBatteryNotLow(requiresBatteryNotLow: Boolean) {
         constraints.setRequiresBatteryNotLow(requiresBatteryNotLow)
     }
 
-    fun setRequiresCharging(requiresCharging: Boolean){
+    fun setRequiresCharging(requiresCharging: Boolean) {
         constraints.setRequiresCharging(requiresCharging)
     }
 
-    fun setDeviceIdl(requiresDeviceIdle: Boolean){
+    fun setDeviceIdl(requiresDeviceIdle: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             constraints.setRequiresDeviceIdle(requiresDeviceIdle)
         }
     }
 
-    fun setStorageNotLow(requiresStorageNotLow: Boolean){
+    fun setStorageNotLow(requiresStorageNotLow: Boolean) {
         constraints.setRequiresStorageNotLow(requiresStorageNotLow)
     }
 
