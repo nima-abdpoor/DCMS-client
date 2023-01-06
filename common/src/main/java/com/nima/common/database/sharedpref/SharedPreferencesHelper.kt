@@ -36,4 +36,11 @@ class SharedPreferencesHelper {
 
     fun getSecondFileReadingStatus() =
         pref.getSharedPref()?.getBoolean(SECOND_FILE_READING_STATUS_KEY, false) ?: false
+
+    fun saveUploadLogWorkerStatus(status: Boolean) {
+        pref.getSharedPref()?.edit()?.putBoolean(UPLOAD_WORKER_STARTED_STATUS_KEY, status)?.apply()
+    }
+
+    fun getUploadWorkerStatus() =
+        pref.getSharedPref()?.getBoolean(UPLOAD_WORKER_STARTED_STATUS_KEY, false) ?: false
 }
