@@ -59,10 +59,16 @@ fun <T : ResponseClass> String.toConfigBodyMapper(): T {
         urlIdFirst = urlIdFirst,
         urlIdSecond = urlIdSecond,
         isLive = configJson["is_live"] as Boolean,
-        syncType = configJson["sync_type"] as String,
         saveRequest = configJson["save_request"] as Boolean,
         saveResponse = configJson["save_response"] as Boolean,
         saveError = configJson["save_error"] as Boolean,
         saveSuccess = configJson["save_success"] as Boolean,
+        netWorkType = configJson["network_type"] as String,
+        repeatInterval = configJson["repeatInterval"] as Long,
+        repeatIntervalTimeUnit = configJson["repeatIntervalTimeUnit"] as String,
+        requiresBatteryNotLow = configJson["requiresBatteryNotLow"] as Boolean,
+        requiresCharging = configJson["requiresCharging"] as Boolean,
+        requiresStorageNotLow = configJson["requiresStorageNotLow"] as Boolean,
+        requiresDeviceIdl = configJson["requiresDeviceIdl"] as Boolean,
     ) as T
 }
