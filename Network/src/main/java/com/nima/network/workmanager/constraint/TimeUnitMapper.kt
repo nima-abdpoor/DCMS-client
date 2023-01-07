@@ -10,7 +10,6 @@ fun String.mapToTimeUnit(): TimeUnit {
         "3" -> TimeUnit.SECONDS
         "4" -> TimeUnit.MINUTES
         "5" -> TimeUnit.HOURS
-        "6" -> TimeUnit.DAYS
         else -> TimeUnit.DAYS
     }
 }

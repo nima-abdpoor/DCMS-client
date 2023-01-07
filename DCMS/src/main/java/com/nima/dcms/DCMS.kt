@@ -6,9 +6,8 @@ import com.nima.common.database.entitty.Config
 import com.nima.common.database.getDao
 import com.nima.common.database.sharedpref.SharedPreferencesHelper
 import com.nima.common.implementation.MyDaoServiceImpl
-import com.nima.common.utils.DEFAULT_REPEAT_INTERVAL_WORKER_TIME
-import com.nima.common.utils.DEFAULT_REPEAT_INTERVAL_WORK_TIME_UNIT
 import com.nima.network.workmanager.NetworkManager
+import com.nima.network.workmanager.constraint.getWorkMangerConstraints
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -27,8 +26,10 @@ class DCMS(private val ctx: Context) {
             val config = deferredConfig.await()
             val manager = NetworkManager(
                 ctx,
-                DEFAULT_REPEAT_INTERVAL_WORKER_TIME,
-                DEFAULT_REPEAT_INTERVAL_WORK_TIME_UNIT
+                config.repeatInterval,
+                config.repeatIntervalTimeUnit,
+                config.getWorkMangerConstraints(),
+                initialDelay = null
             )
             manager.submitWork()
         }

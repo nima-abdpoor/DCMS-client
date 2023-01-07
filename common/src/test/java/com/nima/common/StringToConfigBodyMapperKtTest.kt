@@ -20,7 +20,7 @@ class StringToConfigBodyMapperKtTest {
         assertNotNull(configBody.validRequestUrls)
         assertNotNull(configBody.urlIdFirst)
         assertNotNull(configBody.urlIdSecond)
-        assertNotNull(configBody.syncType)
+        assertNotNull(configBody.networkType)
         assertNotNull(configBody.isLive)
         assertEquals(2, configBody.validRequestUrls?.size)
         configBody.validRequestUrls?.let {
@@ -37,7 +37,7 @@ class StringToConfigBodyMapperKtTest {
             assertEquals("askldjf", it[1].regex)
         }
         assertEquals(false, configBody.isLive)
-        assertEquals("1", configBody.syncType)
+        assertEquals("1", configBody.networkType)
     }
 
     private fun createSampleConfigBody(): String {

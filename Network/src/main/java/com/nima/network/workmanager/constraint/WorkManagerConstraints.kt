@@ -3,14 +3,16 @@ package com.nima.network.workmanager.constraint
 import android.os.Build
 import androidx.work.Constraints
 import androidx.work.NetworkType
+import com.nima.common.database.entitty.Config
 
 class WorkManagerConstraints {
     private val constraints = Constraints.Builder()
         .setRequiresBatteryNotLow(true)
         .setRequiresStorageNotLow(true)
 
-    fun setNetworkType(type: String) {
+    fun setNetworkType(type: String): Constraints.Builder {
         constraints.setRequiredNetworkType(getNetworkTypeByString(type))
+        return constraints
     }
 
     fun setBatteryNotLow(requiresBatteryNotLow: Boolean) {
@@ -31,7 +33,7 @@ class WorkManagerConstraints {
         constraints.setRequiresStorageNotLow(requiresStorageNotLow)
     }
 
-    fun getConstraint() = constraints
+    fun getConstraint() = constraints.build()
 
     private fun getNetworkTypeByString(type: String): NetworkType {
         return when (type) {
@@ -47,4 +49,16 @@ class WorkManagerConstraints {
             else -> NetworkType.CONNECTED
         }
     }
+}
+
+fun Config.getWorkMangerConstraints(): Constraints {
+    val workManagerConstraints = WorkManagerConstraints()
+    workManagerConstraints.apply {
+        setNetworkType(netWorkType ?: "6")
+        setDeviceIdl(requiresDeviceIdl)
+        setBatteryNotLow(requiresBatteryNotLow)
+        setStorageNotLow(requiresStorageNotLow)
+        setRequiresCharging(requiresCharging)
+    }
+    return workManagerConstraints.getConstraint()
 }
