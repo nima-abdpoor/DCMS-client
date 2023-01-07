@@ -9,13 +9,12 @@ import com.nima.common.database.sharedpref.SharedPreferencesHelper
 import com.nima.network.worker.ConfigRouteWorker
 import com.nima.network.worker.UploadLogFileWorker
 import com.nima.network.workmanager.constraint.mapToTimeUnit
-import java.util.concurrent.TimeUnit
 
 class NetworkManager(
     private val context: Context, repeatInterval: Long,
     repeatIntervalTimeUnit: String,
     constraints: Constraints? = null,
-    initialDelay: Pair<Long, TimeUnit>? = null
+    initialDelay: Pair<Long, String>? = null
 ) {
     private val getConfigWorker: WorkRequest
     private val uploadLogFileWorker: WorkRequest
