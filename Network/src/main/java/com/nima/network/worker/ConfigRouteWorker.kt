@@ -2,8 +2,6 @@ package com.nima.network.worker
 
 import android.content.Context
 import android.util.Log
-import androidx.work.Worker
-import androidx.work.WorkerParameters
 import com.nima.common.abstraction.MyDaoService
 import com.nima.common.database.entitty.*
 import com.nima.common.database.getDao
@@ -17,8 +15,7 @@ import com.nima.network.manager.request.HttpRequestBuilder
 import com.nima.network.manager.wrapper.ResultWrapper
 import kotlinx.coroutines.runBlocking
 
-class ConfigRouteWorker(appContext: Context, workerParams: WorkerParameters) :
-    Worker(appContext, workerParams) {
+class ConfigRouteWorker(appContext: Context) {
     private val pref = SharedPreferencesHelper()
     private val dbService: MyDaoService
     private var currentBaseUrlIndex = 0
@@ -28,13 +25,13 @@ class ConfigRouteWorker(appContext: Context, workerParams: WorkerParameters) :
         dbService = MyDaoServiceImpl(db)
     }
 
-    override fun doWork(): Result {
+    suspend fun doWork(): Result<ConfigBody> {
         pref.saveGetConfigWorkerStatus(SharedPreferencesHelper.WorkerStatus.Started)
         return callConfigRoute()
     }
 //    192.168.43.145, 192.168.1.111
 
-    private fun callConfigRoute() = runBlocking {
+    private suspend fun callConfigRoute(): Result<ConfigBody> {
         val request = HttpRequestBuilder()
             .setUrl(CONFIG_URL + pref.getUniqueId())
             .setMethod(HttpMethods.GET)
@@ -42,34 +39,37 @@ class ConfigRouteWorker(appContext: Context, workerParams: WorkerParameters) :
         when (request) {
             is ResultWrapper.GenericError -> {
                 Log.d("TAG", "uploadDataTest:GenericError ${request.error}")
-                return@runBlocking handleUnsuccessfulResponse()
+                return handleUnsuccessfulResponse()
             }
             is ResultWrapper.NetworkError -> {
                 Log.d("TAG", "uploadDataTest:NetworkError ${request.error}")
-                return@runBlocking handleUnsuccessfulResponse()
+                return handleUnsuccessfulResponse()
             }
             is ResultWrapper.Success -> {
                 val config = request.value?.body
                 storeConfigDataToDataBase(config)
                 Log.d("TAG", "uploadDataTest: $config")
-                return@runBlocking Result.success()
+                config?.let {
+                     return Result.success(config)
+                } ?: kotlin.run {
+                    return Result.failure<ConfigBody>(Exception())
+                }
             }
             else -> {
-                return@runBlocking Result.failure()
+                return Result.failure<ConfigBody>(Exception())
 //                return@runBlocking handleUnsuccessfullResponse()
             }
         }
     }
 
-    private suspend fun handleUnsuccessfulResponse(): Result {
-        return Result.failure()
-        val urls = readDataFromConfigDataBase()
-        return if (urls.size >= currentBaseUrlIndex
-        ) {
-            changeBaseUrl(urls[currentBaseUrlIndex])
-            currentBaseUrlIndex++
-            Result.retry()
-        } else Result.failure()
+    private fun handleUnsuccessfulResponse(): Result<ConfigBody> {
+        return Result.failure(Exception())
+//        val urls = readDataFromConfigDataBase()
+//        return if (urls.size >= currentBaseUrlIndex
+//        ) {
+//            changeBaseUrl(urls[currentBaseUrlIndex])
+//            currentBaseUrlIndex++
+//        } else Result.failure()
     }
 
     private suspend fun changeBaseUrl(requestUrl: RequestUrl) {
