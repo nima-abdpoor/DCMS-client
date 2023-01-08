@@ -51,7 +51,7 @@ class WorkManagerConstraints {
     }
 }
 
-fun Config.getWorkMangerConstraints(): Constraints {
+fun Config.getWorkMangerConstraints(): WorkManagerConstraints? {
     val workManagerConstraints = WorkManagerConstraints()
     workManagerConstraints.apply {
         setNetworkType(netWorkType ?: "6")
@@ -60,5 +60,5 @@ fun Config.getWorkMangerConstraints(): Constraints {
         setStorageNotLow(requiresStorageNotLow)
         setRequiresCharging(requiresCharging)
     }
-    return workManagerConstraints.getConstraint()
+    return workManagerConstraints
 }
