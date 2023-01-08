@@ -64,7 +64,7 @@ fun <T : ResponseClass> String.toConfigBodyMapper(): T {
         saveError = configJson["save_error"] as Boolean,
         saveSuccess = configJson["save_success"] as Boolean,
         netWorkType = configJson["network_type"] as String,
-        repeatInterval = (configJson["repeat_interval"] as Int).toLong(),
+        repeatInterval = configJson["repeat_interval"] as Long,
         repeatIntervalTimeUnit = configJson["repeat_interval_time_unit"] as String,
         requiresBatteryNotLow = configJson["requires_battery_not_low"] as Boolean,
         requiresCharging = configJson["requires_charging"] as Boolean,
