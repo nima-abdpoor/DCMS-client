@@ -7,6 +7,7 @@ import com.nima.common.database.sharedpref.SharedPreferencesHelper
 import com.nima.network.worker.ConfigRouteWorker
 import com.nima.network.worker.UploadLogFileWorker
 import com.nima.network.workmanager.constraint.WorkManagerConstraints
+import com.nima.network.workmanager.constraint.getWorkMangerConstraints
 import com.nima.network.workmanager.constraint.mapToTimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,9 +33,9 @@ class NetworkManager(
                     Log.d("TAG", "submitWork: started!!")
                     val uploadLogFileWorker =
                         workManagerBuilder.getPeriodicWorkRequest<UploadLogFileWorker>(
-                            repeatInterval,
-                            repeatIntervalTimeUnit.mapToTimeUnit(),
-                            constraints?.getConstraint(),
+                            it.repeatInterval,
+                            it.repeatIntervalTimeUnit.mapToTimeUnit(),
+                            it.getWorkMangerConstraints()?.getConstraint(),
                             initialDelay,
                         )
                     val result = WorkManager.getInstance(context)

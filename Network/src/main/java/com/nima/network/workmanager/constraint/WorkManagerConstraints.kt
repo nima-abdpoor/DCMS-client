@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.work.Constraints
 import androidx.work.NetworkType
 import com.nima.common.database.entitty.Config
+import com.nima.common.model.ConfigBody
 
 class WorkManagerConstraints {
     private val constraints = Constraints.Builder()
@@ -52,6 +53,18 @@ class WorkManagerConstraints {
 }
 
 fun Config.getWorkMangerConstraints(): WorkManagerConstraints? {
+    val workManagerConstraints = WorkManagerConstraints()
+    workManagerConstraints.apply {
+        setNetworkType(netWorkType ?: "6")
+        setDeviceIdl(requiresDeviceIdl)
+        setBatteryNotLow(requiresBatteryNotLow)
+        setStorageNotLow(requiresStorageNotLow)
+        setRequiresCharging(requiresCharging)
+    }
+    return workManagerConstraints
+}
+
+fun ConfigBody.getWorkMangerConstraints(): WorkManagerConstraints? {
     val workManagerConstraints = WorkManagerConstraints()
     workManagerConstraints.apply {
         setNetworkType(netWorkType ?: "6")
