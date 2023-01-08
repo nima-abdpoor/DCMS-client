@@ -64,11 +64,11 @@ fun <T : ResponseClass> String.toConfigBodyMapper(): T {
         saveError = configJson["save_error"] as Boolean,
         saveSuccess = configJson["save_success"] as Boolean,
         netWorkType = configJson["network_type"] as String,
-        repeatInterval = configJson["repeatInterval"] as Long,
-        repeatIntervalTimeUnit = configJson["repeatIntervalTimeUnit"] as String,
-        requiresBatteryNotLow = configJson["requiresBatteryNotLow"] as Boolean,
-        requiresCharging = configJson["requiresCharging"] as Boolean,
-        requiresStorageNotLow = configJson["requiresStorageNotLow"] as Boolean,
-        requiresDeviceIdl = configJson["requiresDeviceIdl"] as Boolean,
+        repeatInterval = (configJson["repeat_interval"] as Int).toLong(),
+        repeatIntervalTimeUnit = configJson["repeat_interval_time_unit"] as String,
+        requiresBatteryNotLow = configJson["requires_battery_not_low"] as Boolean,
+        requiresCharging = configJson["requires_charging"] as Boolean,
+        requiresStorageNotLow = configJson["requires_storage_not_low"] as Boolean,
+        requiresDeviceIdl = configJson["requires_device_idl"] as Boolean,
     ) as T
 }
