@@ -13,15 +13,16 @@ class UploadLogFileWorker(private val appContext: Context, workerParams: WorkerP
     Worker(appContext, workerParams) {
     private val pref = SharedPreferencesHelper()
     private val fileManager = FileManager(appContext)
-    private val request = FileUploaderHttpRequestBuilder(BASE_URL + UPLOAD_LOG_FILE_URL + pref.getUniqueId())
-
 
     override fun doWork(): Result {
         pref.saveUploadLogWorkerStatus(SharedPreferencesHelper.WorkerStatus.Started)
-        return callUploadFileRout()
+        val url =
+            inputData.getString("UPLOAD_URL") ?: return Result.retry()
+        return callUploadFileRout(url)
     }
 
-    private fun callUploadFileRout(): Result {
+    private fun callUploadFileRout(url: String): Result {
+        val request = FileUploaderHttpRequestBuilder(url)
         getFileWhichIsReadyToUpload()?.let { fileName ->
             return try {
                 request.addFilePart("log", appContext, appContext.getFullLoggedFileName(fileName))

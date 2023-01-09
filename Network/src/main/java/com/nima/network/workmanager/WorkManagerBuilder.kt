@@ -20,11 +20,12 @@ class WorkManagerBuilder {
         repeatInterval: Long,
         repeatIntervalTimeUnit: TimeUnit,
         constraints: Constraints? = null,
-        initialDelay: Pair<Long, String>? = null
+        initialDelay: Pair<Long, String>? = null,
+        inputData: Data
     ): PeriodicWorkRequest {
         val requestBuilder = PeriodicWorkRequestBuilder<T>(repeatInterval, repeatIntervalTimeUnit)
         constraints?.let { requestBuilder.setConstraints(it) }
         initialDelay?.let { requestBuilder.setInitialDelay(it.first, it.second.mapToTimeUnit()) }
-        return requestBuilder.build()
+        return requestBuilder.setInputData(inputData).build()
     }
 }

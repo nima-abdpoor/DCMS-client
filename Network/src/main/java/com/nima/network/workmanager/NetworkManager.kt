@@ -3,7 +3,10 @@ package com.nima.network.workmanager
 import android.content.Context
 import android.util.Log
 import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.nima.common.database.sharedpref.SharedPreferencesHelper
+import com.nima.common.utils.BASE_URL
+import com.nima.common.utils.UPLOAD_LOG_FILE_URL
 import com.nima.network.worker.ConfigRouteWorker
 import com.nima.network.worker.UploadLogFileWorker
 import com.nima.network.workmanager.constraint.WorkManagerConstraints
@@ -37,6 +40,7 @@ class NetworkManager(
                             it.repeatIntervalTimeUnit.mapToTimeUnit(),
                             it.getWorkMangerConstraints()?.getConstraint(),
                             initialDelay,
+                            workDataOf("UPLOAD_URL" to BASE_URL + UPLOAD_LOG_FILE_URL + pref.getUniqueId())
                         )
                     val result = WorkManager.getInstance(context)
                         .enqueue(uploadLogFileWorker)
