@@ -23,6 +23,8 @@ import kotlinx.coroutines.*
 import okhttp3.Interceptor
 import okhttp3.Response
 import okhttp3.ResponseBody
+import java.text.SimpleDateFormat
+import java.util.*
 
 class DCMSInterceptor(context: Context) : Interceptor {
     private lateinit var deferredUrlFirst: Deferred<List<Long>>
@@ -47,9 +49,9 @@ class DCMSInterceptor(context: Context) : Interceptor {
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        val startTime = System.currentTimeMillis()
+        val startTime = SimpleDateFormat("dd-M-yyyy hh:mm:ss z", Locale.getDefault())
         val response = chain.proceed(chain.request())
-        val finishTime = System.currentTimeMillis()
+        val finishTime = SimpleDateFormat("dd-M-yyyy hh:mm:ss z", Locale.getDefault())
         val contentType = response.body()?.contentType()
         val content = response.body()?.string()
         val wrappedBody = ResponseBody.create(contentType, content ?: "")
@@ -71,11 +73,11 @@ class DCMSInterceptor(context: Context) : Interceptor {
                         code = response.code().toString(),
                         body = content ?: "",
                         headers = response.headers().toJsonFormat(),
-                        time = finishTime.toString(),
+                        time = finishTime.format(Date()),
                         url = "",
                         method = "",
                     ),
-                    startTime,
+                    startTime.format(Date()),
                 )?.let {
                     saveOrSendLog(it.toString())
                 }
@@ -115,12 +117,12 @@ class DCMSInterceptor(context: Context) : Interceptor {
     private fun mergeRequestAndResponse(
         request: DCMSResponseBody,
         response: DCMSResponseBody,
-        startTime: Long
+        startTime: String
     ): java.lang.StringBuilder? {
         config?.let { it ->
             val sb = StringBuilder("{")
             if ((it.saveError && !response.isSuccessful) || (it.saveSuccess && response.isSuccessful)) {
-                if (it.saveRequest) sb.append(request.getFormattedRequestString(startTime.toString()))
+                if (it.saveRequest) sb.append(request.getFormattedRequestString(startTime))
                 if (it.saveResponse) sb.append(response.getFormattedResponseString())
             }
             return sb.replace(sb.length - 2, sb.length - 1, "\"}")
