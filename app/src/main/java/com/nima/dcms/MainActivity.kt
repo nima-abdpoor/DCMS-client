@@ -2,7 +2,6 @@ package com.nima.dcms
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.GsonBuilder
@@ -11,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -20,10 +20,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        findViewById<TextView>(R.id.txt).setOnClickListener {
-//            uploadData()
-        }
         val gson = GsonBuilder()
             .setLenient()
             .create()
@@ -35,16 +31,13 @@ class MainActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
         val retro = builder.create(API::class.java)
-        CoroutineScope(Dispatchers.IO).launch {
-            retro.apply {
-                getProducts()
-                getCart()
-                getSpecificProduct()
-                getProductWithCategory()
-                getProductSearchPhone()
-                searchProduct()
-            }
-//            Log.d("TAG", "onCreate: ${res.body()}")
+        retro.apply {
+            findViewById<TextView>(R.id.button1).setOnClickListener { callRequest { getCart() } }
+            findViewById<TextView>(R.id.button2).setOnClickListener { callRequest { getSpecificProduct() } }
+            findViewById<TextView>(R.id.button3).setOnClickListener { callRequest { getProductWithCategory() } }
+            findViewById<TextView>(R.id.button4).setOnClickListener { callRequest { getProductSearchPhone() } }
+            findViewById<TextView>(R.id.button5).setOnClickListener { callRequest { searchProduct() } }
+            findViewById<TextView>(R.id.button6).setOnClickListener { callRequest { getProducts() } }
         }
     }
 }
@@ -52,15 +45,21 @@ class MainActivity : AppCompatActivity() {
 private fun createOKHttpClientDefault(context: Context): OkHttpClient {
     val builder = OkHttpClient.Builder()
     builder.readTimeout(
-        10_000,
+        20_000,
         TimeUnit.MILLISECONDS
     )
     builder.writeTimeout(
-        10_000,
+        20_000,
         TimeUnit.MILLISECONDS
     )
     builder.addInterceptor(DCMSInterceptor(context))
     val client = builder.build()
     client.dispatcher().maxRequests = 5
     return client
+}
+
+private fun callRequest(function: suspend () -> Response<ResponseClass>) {
+    CoroutineScope(Dispatchers.IO).launch {
+        function.invoke()
+    }
 }

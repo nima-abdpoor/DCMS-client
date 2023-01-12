@@ -4,7 +4,7 @@ import com.nima.common.model.DCMSResponseBody
 import okhttp3.Headers
 
 fun DCMSResponseBody.getFormattedRequestString(time: String): String {
-    return "\"request\":{\"url\":\"${url}\",\"body\":\"${body}\",\"header\":\"${headers}\",\"requestTime\":\"${time}\"},"
+    return "\"request\":{\"url\":\"${url}\",\"body\":\"${body}\",\"header\":${headers},\"requestTime\":\"${time}\"},"
 }
 
 fun DCMSResponseBody.getFormattedResponseString(): String {
