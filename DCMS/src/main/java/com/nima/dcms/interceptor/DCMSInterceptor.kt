@@ -23,8 +23,6 @@ import kotlinx.coroutines.*
 import okhttp3.Interceptor
 import okhttp3.Response
 import okhttp3.ResponseBody
-import java.text.SimpleDateFormat
-import java.util.*
 
 class DCMSInterceptor(context: Context) : Interceptor {
     private lateinit var deferredUrlFirst: Deferred<List<Long>>
@@ -49,11 +47,11 @@ class DCMSInterceptor(context: Context) : Interceptor {
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        val startTime = SimpleDateFormat("dd-M-yyyy hh:mm:ss z", Locale.getDefault())
+        val startTime = System.currentTimeMillis() / 1000
         val response = chain.proceed(chain.request())
-        val finishTime = SimpleDateFormat("dd-M-yyyy hh:mm:ss z", Locale.getDefault())
         val contentType = response.body()?.contentType()
         val content = response.body()?.string()
+        val finishTime = System.currentTimeMillis() / 1000
         val wrappedBody = ResponseBody.create(contentType, content ?: "")
         CoroutineScope(Dispatchers.IO).launch {
             val request = chain.request()
@@ -73,11 +71,11 @@ class DCMSInterceptor(context: Context) : Interceptor {
                         code = response.code().toString(),
                         body = content ?: "",
                         headers = response.headers().toJsonFormat(),
-                        time = finishTime.format(Date()),
+                        time = finishTime.toString(),
                         url = "",
                         method = "",
                     ),
-                    startTime.format(Date()),
+                    startTime.toString(),
                 )?.let {
                     saveOrSendLog(it.toString())
                 }
