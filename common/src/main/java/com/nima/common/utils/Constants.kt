@@ -11,6 +11,9 @@ const val SEND_LOG_URL = "/sendLog/"
 
 var SECURE_SHARED_PREFERENCE_FILE_NAME = "DCMS_SECURE_PREF"
 
+//Encryption KEY
+const val ENCRYPTION_KEY = "AES_ENCRYPTION_KEY_DCMS"
+
 const val DCMS_FILE_NAME = "DCMS-FILE"
 const val DCMS_FIRST_FILE_NAME = "FIRST.txt"
 const val DCMS_SECOND_FILE_NAME = "SECOND.txt"

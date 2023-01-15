@@ -51,6 +51,9 @@ class SharedPreferencesHelper {
     fun getConfigWorkerStatus() =
         pref.getSharedPref()?.getBoolean(CONFIG_WORKER_STARTED_STATUS_KEY, false) ?: false
 
+    fun getEncryptionSecretKey() =
+        pref.getSharedPref()?.getString(ENCRYPTION_KEY, "") ?: ""
+
     enum class WorkerStatus(val status: Boolean){
         Started(true), Init(false)
     }
