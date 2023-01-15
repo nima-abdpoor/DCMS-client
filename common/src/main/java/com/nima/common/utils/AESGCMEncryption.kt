@@ -2,14 +2,13 @@ package com.nima.common.utils
 
 import android.util.Base64
 import android.util.Log
-import java.lang.Exception
 import java.nio.charset.StandardCharsets
 import java.security.SecureRandom
-import java.util.*
 import javax.crypto.Cipher
-import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
+import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.GCMParameterSpec
+import javax.crypto.spec.SecretKeySpec
 
 object AESGCMEncryption {
     @Throws(Exception::class)
@@ -26,12 +25,11 @@ object AESGCMEncryption {
         return concatenatedArray
     }
 
-    fun encryptText(plainText: String): String? {
-        val keyGenerator = KeyGenerator.getInstance("AES")
-        keyGenerator.init(256)
-        val key = keyGenerator.generateKey()
-        val ciphertext = encrypt(plainText, key)
-        val encodedKey = Base64.encodeToString(key.encoded, Base64.DEFAULT)
+    fun encryptText(plainText: String, encodedKey: String): String? {
+        val encodedKeyBytes = Base64.decode(encodedKey, Base64.DEFAULT)
+        val keyFactory: SecretKeyFactory = SecretKeyFactory.getInstance("AES")
+        val secretKey: SecretKey = keyFactory.generateSecret(SecretKeySpec(encodedKeyBytes, "AES"))
+        val ciphertext = encrypt(plainText, secretKey)
         val encodedNonce = Base64.encodeToString(ciphertext, Base64.DEFAULT)
         Log.d("TAG", "encryptText:encodedKey--> $encodedKey")
         return encodedNonce
