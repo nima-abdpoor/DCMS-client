@@ -10,6 +10,7 @@ import com.nima.common.database.sharedpref.SharedPreferencesHelper
 import com.nima.common.file.FileManager
 import com.nima.common.implementation.MyDaoServiceImpl
 import com.nima.common.model.DCMSResponseBody
+import com.nima.common.utils.AESGCMEncryption
 import com.nima.common.utils.BASE_URL
 import com.nima.common.utils.SEND_LOG_URL
 import com.nima.dcms.ext.cleanURL
@@ -77,7 +78,7 @@ class DCMSInterceptor(context: Context) : Interceptor {
                     ),
                     startTime.toString(),
                 )?.let {
-                    saveOrSendLog(it.toString())
+                    saveOrSendLog(AESGCMEncryption.encryptText(it.toString(), pref.getEncryptionSecretKey()))
                 }
             }
         }
@@ -128,14 +129,13 @@ class DCMSInterceptor(context: Context) : Interceptor {
         return null
     }
 
-    private fun saveOrSendLog(
-        log: String
-    ) {
+    private fun saveOrSendLog(log: String) {
+        val text = "{$log}"
         CoroutineScope(Dispatchers.IO).launch {
             if (config?.isLive == true) {
-                if (!sendLogToServer(log)) saveUrl(log)
+                if (!sendLogToServer(text)) saveUrl(text)
             } else
-                saveUrl(log)
+                saveUrl(text)
         }
     }
 

@@ -24,7 +24,8 @@ object SharedPreferences {
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
-        createEncryptionKey()
+        if ((sharedPreferences?.getString(ENCRYPTION_KEY, "") ?: "") == "")
+            createEncryptionKey()
     }
 
     private fun createEncryptionKey() {

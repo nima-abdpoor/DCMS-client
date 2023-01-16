@@ -6,7 +6,6 @@ import java.nio.charset.StandardCharsets
 import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
-import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
@@ -25,13 +24,16 @@ object AESGCMEncryption {
         return concatenatedArray
     }
 
-    fun encryptText(plainText: String, encodedKey: String): String? {
-        val encodedKeyBytes = Base64.decode(encodedKey, Base64.DEFAULT)
-        val keyFactory: SecretKeyFactory = SecretKeyFactory.getInstance("AES")
-        val secretKey: SecretKey = keyFactory.generateSecret(SecretKeySpec(encodedKeyBytes, "AES"))
+    fun encryptText(plainText: String, encodedKey: String): String {
+        val encodedKeyBytes: ByteArray = Base64.decode(encodedKey, Base64.DEFAULT)
+        val secretKey: SecretKey = SecretKeySpec(encodedKeyBytes, "AES")
         val ciphertext = encrypt(plainText, secretKey)
         val encodedNonce = Base64.encodeToString(ciphertext, Base64.DEFAULT)
-        Log.d("TAG", "encryptText:encodedKey--> $encodedKey")
-        return encodedNonce
+        Log.d("TAG", "encryptText:$encodedNonce key:$encodedKey")
+        return cleanEncryptedText(encodedNonce)
+    }
+
+    private fun cleanEncryptedText(encodedNonce: String): String {
+        return encodedNonce.replace("\n", "")
     }
 }
