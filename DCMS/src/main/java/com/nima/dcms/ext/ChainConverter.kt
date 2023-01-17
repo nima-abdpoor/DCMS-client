@@ -4,11 +4,11 @@ import com.nima.common.model.DCMSResponseBody
 import okhttp3.Headers
 
 fun DCMSResponseBody.getFormattedRequestString(time: String): String {
-    return "\"request\":{\"url\":\"${url}\",\"body\":\"${body}\",\"header\":${headers},\"requestTime\":\"${time}\"},"
+    return "\"REQUEST\":{\"url\":\"${url}\",\"body\":\"${body}\",\"header\":${headers},\"requestTime\":\"${time}\"},"
 }
 
 fun DCMSResponseBody.getFormattedResponseString(): String {
-    return "\"response\":{\"body\":\"${body}\",\"code\":\"${code}\",\"header\":${headers}\"requestTime\":\"${time}\"}"
+    return "\"RESPONSE\":{\"body\":\"${body}\",\"code\":\"${code}\",\"header\":${headers}\"requestTime\":\"${time}\"}"
 }
 
 
